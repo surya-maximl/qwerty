@@ -24,7 +24,7 @@ const Home: React.FC = () => {
         <LeftPane items={[]} />
         <Layout className="bg-slate-100">
           <AppHeader />
-          <Content className="bg-white m-1">
+          <Content className="bg-white">
             <Outlet />
           </Content>
         </Layout>
