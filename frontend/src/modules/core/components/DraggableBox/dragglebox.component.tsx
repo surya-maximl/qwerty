@@ -1,57 +1,90 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useCallback, useEffect, useState } from 'react';
-import cx from 'classnames';
+import React, { useState } from 'react';
 import { useDrag } from 'react-dnd';
-import { getEmptyImage } from 'react-dnd-html5-backend';
-import { Rnd } from 'react-rnd';
-import {RndResizeCallback, RndDragCallback }  from 'react-rnd';
+import { Rnd, DraggableData, ResizableDelta, Position } from 'react-rnd';
+import { Box, Direction } from '../../interfaces/editor.interface';
 
+type Props = {
+  onDragStop: (e: any, componentId: number, direction: DraggableData) => void,
+  onResizeStop: (id: number, e: any, direction: Direction, ref:React.ElementRef<'div'>, d: ResizableDelta, position: Position) => void,
+  inCanvas: boolean,
+  canvasWidth: () => number,
+  key: number,
+  id: number,
+  box: Box,
+  resizingStatusChanged: (status: boolean) => void,
+  draggingStatusChanged: (status: boolean) => void,
+}
 const NO_OF_GRIDS = 43;
 
-export const DraggableBox = React.memo(
+export const DraggableBox = React.memo<Props>(
   ({
-    onResizeStop: RndResizeCallback,
-    onDragStop: RndDragCallback 
-    
+    onResizeStop,
+    onDragStop,
+    inCanvas,
+    canvasWidth,
+    key,
+    id,
+    box,
+    resizingStatusChanged,
+    draggingStatusChanged
   }) => {
     const [isResizing, setResizing] = useState(false);
     const [isDragging2, setDragging] = useState(false);
     const [canDrag, setCanDrag] = useState(true);
     
-    const gridWidth = canvasWidth / NO_OF_GRIDS;
+    const gridWidth = Number(canvasWidth) / NO_OF_GRIDS;
     
     const [{ isDragging }, drag, preview] = useDrag(
       () => ({
-        type: 'box',
+        type: 'Box',
         item: {
           id,
-          title,
-          component,
-          zoomLevel,
-          parent,
-          layouts,
           canvasWidth,
         },
         collect: (monitor) => ({
           isDragging: monitor.isDragging(),
         }),
       }),
-      [id, title, component, index, zoomLevel, parent, layouts, canvasWidth]
+      [id, parent, canvasWidth]
     );
 
 
     return (
             <Rnd
-              maxWidth={canvasWidth}
+              style={{
+                display: 'inline-block',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '0px',
+                border: '1px solid black'
+              }}
+              maxWidth={canvasWidth()}
               onDragStop={(e, direction) => {
                 setDragging(false);
-                onDragStop(e, id, direction);
+                onDragStop(e, Number(id), direction);
               }}
               onResizeStop={(e, direction, ref, d, position) => {
                 setResizing(false);
-                onResizeStop(id, e, direction, ref, d, position);
+                onResizeStop(Number(id), e, direction, ref, d, position);
+              }}
+              position={{
+                x: box ? (box.left * canvasWidth()) / 100 : 0,
+                y: box ? box.top : 0,
+              }}
+              onResize={() => setResizing(true)}
+              onDrag={(e) => {
+                e.preventDefault();
+                if (!isDragging2) {
+                  setDragging(true);
+                }
+              }}
+              size={{
+                width: box.width,
+                height: box.height,
               }}
             >
+              {box.title}
             </Rnd>
       )
   });
