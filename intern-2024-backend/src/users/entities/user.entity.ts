@@ -54,11 +54,11 @@ export class User extends BaseEntity{
     @Column({ name: 'avatar_id', nullable: true, default: null })
     avatarId?: string;
 
-    @Column({ name: 'invitation_token' })
-    invitationToken: string;
+    @Column({ name: 'invitation_token', nullable: true, default: null })
+    invitationToken?: string;
 
-    @Column({ name: 'forgot_password_token' })
-    forgotPasswordToken: string;
+    @Column({ name: 'forgot_password_token', nullable: true, default: null })
+    forgotPasswordToken?: string;
 
     @Column({ name: 'password_digest' })
     password: string;
@@ -66,16 +66,16 @@ export class User extends BaseEntity{
     @Column({ name: 'organization_id' })
     defaultOrganizationId: string;
 
-    @Column({ name: 'company_name' })
-    companyName: string;
+    @Column({ name: 'company_name', nullable: true, default: null })
+    companyName?: string;
 
-    @Column({ name: 'role' })
-    role: string;
+    @Column({ name: 'role', nullable: true, default: null })
+    role?: string;
 
-    @Column({ name: 'company_size' })
-    companySize: string;
+    @Column({ name: 'company_size' , nullable: true, default: null})
+    companySize?: string;
 
-    @Column({ name: 'password_retry_count' })
+    @Column({ name: 'password_retry_count', default: 5 })
     passwordRetryCount: number;
 
     @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
@@ -89,7 +89,7 @@ export class User extends BaseEntity{
 
     // @ManyToOne(() => Organization, (organization) => organization.id)
     // @JoinColumn({ name: 'organization_id' })
-    // organization: Organization;;
+    // organization: Organization;
 
 }
 

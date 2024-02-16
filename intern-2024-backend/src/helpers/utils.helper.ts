@@ -1,12 +1,12 @@
-import { EntityManager } from "typeorm";
+import { DataSource, EntityManager } from "typeorm";
 import * as sanitizeHtml from 'sanitize-html';
 
 export async function dbTransactionWrap(operation: (...args) => any, manager?: EntityManager): Promise<any> {
     if (manager) {
       return await operation(manager);
     } else {
-        let entityManager:EntityManager;
-      return await entityManager.transaction(async (manager) => {
+        let dataSource:DataSource;
+      return await dataSource.transaction(async (manager) => {
         return await operation(manager);
       });
     }

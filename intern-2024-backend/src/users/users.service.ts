@@ -3,7 +3,7 @@ import { User } from './entities/user.entity';
 import { EntityManager, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as uuid from 'uuid';
-import { cleanObject, dbTransactionWrap } from 'src/helpers/utils.helper';
+import { cleanObject } from 'src/helpers/utils.helper';
 import { WORKSPACE_USER_STATUS } from './enum/data.enum';
 
 @Injectable()
@@ -11,7 +11,8 @@ export class UsersService {
 
   constructor(
     @InjectRepository(User)
-    private readonly usersRepository: Repository<User>
+    private readonly usersRepository: Repository<User>,
+    private readonly entityManager: EntityManager
   ){}
 
   async getCount():Promise<number>{
@@ -31,7 +32,7 @@ export class UsersService {
   }
 
   async findByEmail(email:string, organizationId?:string, status?:string | Array<string>, manager?:EntityManager){
-    return await dbTransactionWrap(async(manager:EntityManager)=>{
+    return await this.dbTransactionWrap(async(manager:EntityManager)=>{
       if(!organizationId){
         return manager.findOne(User,{
           where:{email},
@@ -60,7 +61,7 @@ export class UsersService {
     const {email, firstName, lastName, password, source, status, phoneNumber} = userDetails;
     let user:User;
 
-    await dbTransactionWrap(async(manager:EntityManager)=>{
+    await this.dbTransactionWrap(async(manager:EntityManager)=>{
       user= manager.create(User,{
         email,
         firstName,
@@ -92,7 +93,7 @@ export class UsersService {
 
     //removing keys with undefined values
     cleanObject(updateDetails);
-    return await dbTransactionWrap(async(manager:EntityManager)=>{
+    return await this.dbTransactionWrap(async(manager:EntityManager)=>{
       const user = await manager.update(User, userId, updateDetails);
 
       return user;
@@ -100,8 +101,18 @@ export class UsersService {
   }
 
   async updateUser(userId:string, details: Partial<User>, manager?:EntityManager){
-    await dbTransactionWrap(async(manager:EntityManager)=>{
+    await this.dbTransactionWrap(async(manager:EntityManager)=>{
       await manager.update(User,userId,details);
     },manager);
+  }
+
+  async dbTransactionWrap(operation: (...args) => any, manager?: EntityManager): Promise<any> {
+    if (manager) {
+      return await operation(manager);
+    } else {
+      return await this.entityManager.transaction(async (manager) => {
+        return await operation(manager);
+      });
+    }
   }
 }
