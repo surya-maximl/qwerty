@@ -5,7 +5,6 @@ import { OrganizationUsersModule } from './organization_users/organization_users
 import { DatabaseModule } from './config/database/database.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
-import { AyushDatabaseModule } from './config/database/ayush_database.module';
 
 @Module({
   imports: [ConfigModule.forRoot({isGlobal:true}), DatabaseModule, OrganizationModule, UsersModule, OrganizationUsersModule, AuthModule],

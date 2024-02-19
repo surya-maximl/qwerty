@@ -41,7 +41,7 @@ export class User extends BaseEntity {
 
     @Column({
         type:'enum',
-        enumName:'status',
+        enumName:'user_status',
         name:'status',
         enum:StatusTypes,
         default:StatusTypes.INVITED
