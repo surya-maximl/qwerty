@@ -352,7 +352,7 @@ const Container: React.FC<Props> = ({ canvasWidth }) => {
     <>
     <div 
     id="real-canvas"
-      className="real-canvas relative h-full w-full"
+      className="flex items-center real-canvas relative h-full w-full bg-slate-200"
       ref={(el) => {
         canvasRef.current = el;
         drop(el);
@@ -374,12 +374,10 @@ const Container: React.FC<Props> = ({ canvasWidth }) => {
         return <DraggableBox {...DraggableBoxProps} />;
       })}
       {Object.keys(boxes).length === 0 && !isDragging && (
-        <div style={{ paddingTop: '10%' }}>
-          <div className="mx-auto w-50 p-5 bg-light no-components-box">
+          <div className="flex items-center justify-center mx-auto p-5 border-1 border-solid h-1/3">
             You haven&apos;t added any components yet. Drag components from the right sidebar and
             drop here.
           </div>
-        </div>
       )}
       </div>
     </>

@@ -4,6 +4,7 @@ import { useDrag } from 'react-dnd';
 import { DraggableData, Position, ResizableDelta, Rnd } from 'react-rnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 import { Box, Direction } from '../../interfaces/editor.interface';
+import IconsMapping from '../IconsMapping/iconsMapping.component';
 
 type Props = {
   onDragStop: (e: any, componentId: any, direction: DraggableData) => void;
@@ -134,8 +135,11 @@ export const DraggableBox = memo<Props>(
                 {box?.component.name}
               </div>
             </Rnd>
-        ) : <div className='h-10 w-10 draggable-box' ref={drag} role="DraggableBox">
-            {component.component}
+        ) : <div className='h-[4.5rem] w-[4.5rem] flex flex-col items-center' ref={drag} role="DraggableBox">
+            <div className='w-full h-full flex items-center justify-center bg-slate-200 rounded-lg text-xl'>
+              {<IconsMapping name={component.component}/>}
+              </div>
+            <p className='text-[.65rem] font-thin mt-1'>{component.component}</p>
           </div>}
       </>
     );

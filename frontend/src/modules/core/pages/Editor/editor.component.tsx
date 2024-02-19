@@ -46,7 +46,7 @@ const Editor: React.FC = () => {
         <Flex flex={3}  id="real-canvas">
           <Container {...containerProps}/>
         </Flex>
-        <Flex flex={1} className="bg-slate-500" id="widget-manager">
+        <Flex flex={1} id="widget-manager">
           <WidgetManager componentTypes={componentTypes}/>
         </Flex>
         </DndProvider>

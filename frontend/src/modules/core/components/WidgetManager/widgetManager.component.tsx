@@ -1,29 +1,13 @@
-import { useState, ChangeEvent, useEffect } from 'react';
+import { useState, ChangeEvent } from 'react';
+import { Props as  SearchPropsType} from '../SearchBox/SearchBoxProps.type';
+import { Props as WidgetManagerPropsType } from './widgetManager.type'
 import { DraggableBox } from '../DraggableBox/dragglebox.component';
 import Fuse from 'fuse.js';
 import { isEmpty } from 'lodash';
 import { SearchBox } from '../SearchBox/SearchBox.component';
+import { capitalizeEveryWord } from '../../utils/editorUtils';
 
-type Props = {
-  componentTypes: any
-}
-
-type SearchPropsType = {
-  width?: number,
-  onSubmit?: any,
-  className?: string
-  debounceDelay?: number,
-  darkMode?: boolean,
-  placeholder?: string,
-  customClass?: string,
-  callBack?: (e: ChangeEvent<HTMLInputElement>) => void,
-  onClearCallback?: () => void,
-  autoFocus?: boolean,
-  showClearButton?: boolean,
-  initialValue?: string,
-}
-
-export const WidgetManager: React.FC<Props> = function WidgetManager({componentTypes}) {
+export const WidgetManager: React.FC<WidgetManagerPropsType> = function WidgetManager({componentTypes}) {
   const [filteredComponents, setFilteredComponents] = useState(componentTypes);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -44,12 +28,12 @@ export const WidgetManager: React.FC<Props> = function WidgetManager({componentT
     }
   }
 
-  function renderList(header, items) {
+  function renderList(header: string, items) {
     if (isEmpty(items)) return null;
     return (
-      <div>
-        <span>{header}</span>
-        <div>
+      <div className='my-4'>
+        <h1 className='text-xs text-slate-600 font-semibold mb-1'>{capitalizeEveryWord(header)}</h1>
+        <div className='flex flex-wrap gap-6'>
           {items.map((component, i) => <DraggableBox key={i} index={i} component={component}/>)}
         </div>
       </div>
@@ -141,14 +125,14 @@ export const WidgetManager: React.FC<Props> = function WidgetManager({componentT
   }
 
   return (
-    <div>
-      <p>Components</p>
+    <div className='border-[1px] border-solid border-t-0 border-slate-500 w-full py-6 px-4'>
+      <p className='font-semibold text-lg'>Components</p>
       <div>
         <SearchBox
           {...SearchProps}
         />
       </div>
-      <div >{segregateSections()}</div>
+      <div className='p-2'>{segregateSections()}</div>
     </div>
   );
 };

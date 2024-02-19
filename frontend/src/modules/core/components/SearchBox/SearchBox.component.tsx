@@ -1,30 +1,14 @@
 import { useState, useEffect, ChangeEvent } from 'react';
-import PropTypes from 'prop-types';
+import { Props } from './SearchBoxProps.type';
 import useDebounce from "../../../shared/hooks/useDebounce";
 import useMounted from "../../../shared/hooks/useMount";
 import { SearchOutlined } from '@ant-design/icons';
-
-type Props = {
-  width?: number,
-  onSubmit?: any,
-  className?: string
-  debounceDelay?: number,
-  darkMode?: boolean,
-  placeholder?: string,
-  customClass?: string,
-  callBack?: (e: ChangeEvent<HTMLInputElement>) => void,
-  onClearCallback?: () => void,
-  autoFocus?: boolean,
-  showClearButton?: boolean,
-  initialValue?: string,
-}
 
 export const SearchBox: React.FC<Props> = (
   (
     {
       width = 200,
       onSubmit,
-      className,
       debounceDelay = 300,
       darkMode = false,
       placeholder = 'Search',
