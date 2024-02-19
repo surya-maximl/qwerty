@@ -15,7 +15,7 @@ import { OrganizationUser } from 'src/organization_users/entities/organization_u
                 username: "default",
                 password: "KslXvpunw89D",
                 database: "verceldb",
-                entities:[ User, Organization, OrganizationUser],
+                autoLoadEntities:true,
                 synchronize: true,
                 ssl: true,
             }),
