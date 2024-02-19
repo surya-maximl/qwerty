@@ -1,22 +1,31 @@
 import { Flex } from "antd";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import Container from "../../components/Container/container.component";
 import { useAppDispatch } from "../../../shared/hooks/useAppDispatch";
 import { coreActions } from "../../reducers/core.reducer";
+import { WidgetManager } from "../../components/WidgetManager/widgetManager.component";
+import { componentTypes } from "../../components/WidgetManager/widgetsComponents";
 
 type Props = {}
 
 type ContainerPropsType = {
-  canvasWidth: () => number
+  canvasWidth: number
 }
 
 const Editor: React.FC = () => {
+  const [canvasWidth, setCanvasWidth] = useState(0);
   const dispatch = useAppDispatch();
+
   useEffect(() => {
     dispatch(coreActions.changeTitle("Editor"));
-  })
+  }, [])
+
+  useEffect(() => {
+    setCanvasWidth(getCanvasWidth());
+    window.addEventListener("resize", () => setCanvasWidth(getCanvasWidth()));
+  }, [canvasWidth])
 
   const getCanvasWidth = () => {
     const canvasBoundingRect = document.getElementsByClassName('real-canvas')[0]?.getBoundingClientRect();
@@ -26,7 +35,7 @@ const Editor: React.FC = () => {
   };
 
   const containerProps: ContainerPropsType = {
-    canvasWidth: getCanvasWidth
+    canvasWidth: canvasWidth
   }
 
   
@@ -34,11 +43,11 @@ const Editor: React.FC = () => {
     <>
       <Flex className="h-full">
         <DndProvider backend={HTML5Backend}>
-        <Flex flex={3} className="real-canvas" id="real-canvas">
+        <Flex flex={3}  id="real-canvas">
           <Container {...containerProps}/>
         </Flex>
         <Flex flex={1} className="bg-slate-500" id="widget-manager">
-          2
+          <WidgetManager componentTypes={componentTypes}/>
         </Flex>
         </DndProvider>
       </Flex>

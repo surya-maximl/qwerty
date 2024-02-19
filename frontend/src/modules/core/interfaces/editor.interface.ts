@@ -19,7 +19,6 @@ export type Box = {
   component: string;
   zoomLevel: number;
   parent: string;
-  canvasWidth: number;
   top: number;
   left: number;
   width: number;
