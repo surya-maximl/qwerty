@@ -8,15 +8,15 @@ import { OrganizationUser } from 'src/organization_users/entities/organization_u
 @Module({
     imports:[
         TypeOrmModule.forRootAsync({
-            useFactory:(configService: ConfigService)=> ({
+            useFactory:async(configService: ConfigService)=> ({
                 type: 'postgres',
                 host: "ep-gentle-king-a2bt7a21-pooler.eu-central-1.aws.neon.tech",
                 port: 5432,
                 username: "default",
                 password: "KslXvpunw89D",
                 database: "verceldb",
-                autoLoadEntities:true,
-                synchronize: false,
+                entities:[ User, Organization, OrganizationUser],
+                synchronize: true,
                 ssl: true,
             }),
             inject:[ConfigService]

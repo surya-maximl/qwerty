@@ -1,4 +1,4 @@
-import { BaseEntity, BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BaseEntity, BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 import { OrganizationUser } from "../../organization_users/entities/organization_user.entity";
 import { Organization } from "../../organization/entities/organization.entity";
@@ -6,9 +6,10 @@ import { Organization } from "../../organization/entities/organization.entity";
 
 import * as bcrypt from "bcrypt";
 import { SourceTypes, StatusTypes } from "../enum/data.enum";
+import * as uuid from 'uuid';
 
 @Entity({name: 'users'})
-export class User extends BaseEntity{
+export class User extends BaseEntity {
 
     @BeforeInsert()
     @BeforeUpdate()
@@ -17,6 +18,11 @@ export class User extends BaseEntity{
             this.password = await bcrypt.hashSync(this.password,10);
         }
     }
+
+    // @BeforeInsert() 
+    // genarate(){ 
+    //     this.id=uuid.v4();
+    // }
     
     @PrimaryGeneratedColumn('uuid')
     id:string;
@@ -78,13 +84,13 @@ export class User extends BaseEntity{
     @Column({ name: 'password_retry_count', default: 5 })
     passwordRetryCount: number;
 
-    @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
+    @CreateDateColumn({ default: new Date(), name: 'created_at' })
     createdAt: Date;
 
-    @UpdateDateColumn({ default: () => 'now()', name: 'updated_at' })
+    @UpdateDateColumn({ default: new Date(), name: 'updated_at' })
     updatedAt: Date;
 
-    @OneToMany(() => OrganizationUser, (organizationUser) => organizationUser.user, { eager: true })
+    @OneToMany(() => OrganizationUser, (organizationUser) => organizationUser.user, { eager: true, cascade:true })
     organizationUsers: OrganizationUser[];
 
     // @ManyToOne(() => Organization, (organization) => organization.id)

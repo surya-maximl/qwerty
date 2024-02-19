@@ -10,19 +10,26 @@ import {
     JoinColumn,
     BaseEntity,
     Unique,
+    BeforeInsert,
+    PrimaryColumn,
   } from 'typeorm';
-
+import * as uuid from 'uuid';
 
   @Entity({ name: 'organization_users' })
   @Unique(['userId', 'organizationId'])
   export class OrganizationUser extends BaseEntity {
+    // @BeforeInsert() 
+    // genarate(){ 
+    //     this.id=uuid.v4();
+    // }
+    
     @PrimaryGeneratedColumn('uuid')
-    id: string;
+    id:string;
   
     @Column()
     role: string;
   
-    @Column({ type: 'enum', enumName: 'status', enum: ['invited', 'active', 'archived'] })
+    @Column({ type: 'enum', name:'status', enumName: 'status', enum: ['invited', 'active', 'archived'] })
     status: string;
   
     @Column({ name: 'organization_id' })
@@ -34,17 +41,17 @@ import {
     @Column({ name: 'invitation_token' })
     invitationToken: string;
   
-    @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
+    @CreateDateColumn({ default: new Date(), name: 'created_at' })
     createdAt: Date;
   
-    @UpdateDateColumn({ default: () => 'now()', name: 'updated_at' })
+    @UpdateDateColumn({ default: new Date(), name: 'updated_at' })
     updatedAt: Date;
   
-    @ManyToOne(() => Organization, (organization) => organization.id)
+    @ManyToOne(() => Organization, (organization) => organization.organizationUsers)
     @JoinColumn({ name: 'organization_id' })
     organization: Organization;
   
-    @ManyToOne(() => User, (user) => user.id)
+    @ManyToOne(() => User, (user) => user.organizationUsers)
     @JoinColumn({ name: 'user_id' })
     user: User;
   }

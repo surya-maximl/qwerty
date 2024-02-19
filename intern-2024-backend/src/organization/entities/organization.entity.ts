@@ -8,12 +8,20 @@ import {
     OneToMany,
     JoinColumn,
     BaseEntity,
+    PrimaryColumn,
+    BeforeInsert,
   } from 'typeorm';
+  import * as uuid from 'uuid';
   
   @Entity({ name: 'organizations' })
-  export class Organization extends BaseEntity {
+  export class Organization extends BaseEntity{
+    // @BeforeInsert() 
+    // genarate(){ 
+    //     this.id=uuid.v4();
+    // }
+    
     @PrimaryGeneratedColumn('uuid')
-    id: string;
+    id:string;
   
     @Column({ name: 'name', unique: true })
     name: string;
@@ -30,13 +38,13 @@ import {
     @Column({ name: 'inherit_sso' })
     inheritSSO: boolean;
   
-    @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
+    @CreateDateColumn({ default: new Date(), name: 'created_at' })
     createdAt: Date;
   
-    @UpdateDateColumn({ default: () => 'now()', name: 'updated_at' })
+    @UpdateDateColumn({ default: new Date(), name: 'updated_at' })
     updatedAt: Date;
 
-    @OneToMany(() => OrganizationUser, (organizationUser) => organizationUser.organization)
+    @OneToMany(() => OrganizationUser, (organizationUser) => organizationUser.organization, {cascade:true})
     organizationUsers: OrganizationUser[];
   }
   
