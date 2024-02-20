@@ -7,9 +7,10 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { AppEnvironmentsModule } from './app_environments/app_environments.module';
 import { AppsModule } from './apps/apps.module';
+import { ComponentsModule } from './components/components.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), DatabaseModule, OrganizationModule, UsersModule, OrganizationUsersModule, AuthModule, AppEnvironmentsModule, AppsModule],
+  imports: [ConfigModule.forRoot({ isGlobal: true }), DatabaseModule, OrganizationModule, UsersModule, OrganizationUsersModule, AuthModule, AppEnvironmentsModule, AppsModule, ComponentsModule],
   controllers: [],
   providers: [],
 })
