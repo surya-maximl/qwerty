@@ -20,7 +20,7 @@ export class UsersService {
   }
 
   async findOne(id:string){
-    return this.usersRepository.findOne({where:{id}});
+    return this.usersRepository.findOne({where:{id}, relations:['organization']});
   }
 
   async findByPasswordResetToken(token:string){
@@ -60,9 +60,9 @@ export class UsersService {
   async create(userDetails: Partial<User>, organizationId:string,isInvite?:boolean, defaultOrganizationId?:string, manager?:EntityManager) {
     const {email, firstName, lastName, password, source, status, phoneNumber} = userDetails;
     let user:User;
-
+    // console.log(defaultOrganizationId);
     await this.dbTransactionWrap(async(manager:EntityManager)=>{
-      user= manager.create(User,{
+      user = manager.create(User,{
         email,
         firstName,
         lastName,
@@ -75,8 +75,8 @@ export class UsersService {
         createdAt: new Date(),
         updatedAt: new Date()
       });
-      await manager.save(user);
-    })
+      user = await manager.save(user);
+    },manager)
 
     return user;
   }

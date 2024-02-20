@@ -47,11 +47,11 @@ import * as uuid from 'uuid';
     @UpdateDateColumn({ default: new Date(), name: 'updated_at' })
     updatedAt: Date;
   
-    @ManyToOne(() => Organization, (organization) => organization.organizationUsers)
+    @ManyToOne(() => Organization, (organization) => organization.id)
     @JoinColumn({ name: 'organization_id' })
     organization: Organization;
   
-    @ManyToOne(() => User, (user) => user.organizationUsers)
+    @ManyToOne(() => User, (user) => user.id)
     @JoinColumn({ name: 'user_id' })
     user: User;
   }

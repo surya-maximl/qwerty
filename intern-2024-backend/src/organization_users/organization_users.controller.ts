@@ -9,7 +9,7 @@ export class OrganizationUsersController {
 
   @Post()
   create(@Body() createOrganizationUserDto: CreateOrganizationUserDto) {
-    return this.organizationUsersService.create(createOrganizationUserDto);
+    // return this.organizationUsersService.create(createOrganizationUserDto);
   }
 
   @Get()
