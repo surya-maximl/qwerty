@@ -1,23 +1,14 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { UsersModule } from './users/users.module';
+import { OrganizationModule } from './organization/organization.module';
+import { OrganizationUsersModule } from './organization_users/organization_users.module';
+import { DatabaseModule } from './config/database/database.module';
+import { ConfigModule } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(
-    {
-      type: 'postgres',
-      host: "ep-gentle-king-a2bt7a21-pooler.eu-central-1.aws.neon.tech",
-      port: 5432,
-      username: "default",
-      password: "KslXvpunw89D",
-      database: "verceldb",
-      entities: [],
-      synchronize: true,
-      ssl: true
-    }
-  ), TypeOrmModule.forFeature()],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [ConfigModule.forRoot({isGlobal:true}), DatabaseModule, OrganizationModule, UsersModule, OrganizationUsersModule, AuthModule],
+  controllers: [],
+  providers: [],
 })
 export class AppModule { }
