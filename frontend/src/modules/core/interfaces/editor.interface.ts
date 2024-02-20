@@ -12,7 +12,7 @@ export type DraggableData = {
   lastX: number, lastY: number
 };
 
-export type Box = {
+export type BoxProps = {
   key: number,
   id: number;
   title: string;

@@ -13,7 +13,6 @@ export const WidgetManager: React.FC<WidgetManagerPropsType> = function WidgetMa
 
   function handleSearchQueryChange(e: ChangeEvent<HTMLInputElement>) {
     const { value } = e.target;
-
     setSearchQuery(value);
     filterComponents(value);
   }

@@ -146,7 +146,7 @@ export const widgets = [
     description: 'User text input field',
     component: 'TextInput',
     defaultSize: {
-      width: 6,
+      width: 150,
       height: 30,
     },
     others: {
@@ -277,7 +277,7 @@ export const widgets = [
     description: 'Numeric input field',
     component: 'NumberInput',
     defaultSize: {
-      width: 4,
+      width: 100,
       height: 30,
     },
     others: {
@@ -403,7 +403,7 @@ export const widgets = [
     description: 'Secure text input',
     component: 'PasswordInput',
     defaultSize: {
-      width: 4,
+      width: 100,
       height: 30,
     },
     others: {
@@ -490,7 +490,7 @@ export const widgets = [
     description: 'Single checkbox toggle',
     component: 'Checkbox',
     defaultSize: {
-      width: 5,
+      width: 100,
       height: 30,
     },
     actions: [
@@ -581,7 +581,7 @@ export const widgets = [
     description: 'Select one from multiple choices',
     component: 'RadioButton',
     defaultSize: {
-      width: 6,
+      width: 100,
       height: 60,
     },
     others: {
@@ -694,7 +694,7 @@ export const widgets = [
     description: 'User-controlled on-off switch',
     component: 'ToggleSwitch',
     defaultSize: {
-      width: 6,
+      width: 100,
       height: 30,
     },
     others: {
@@ -777,7 +777,7 @@ export const widgets = [
     description: 'Multi-line text input',
     component: 'TextArea',
     defaultSize: {
-      width: 6,
+      width: 150,
       height: 100,
     },
     others: {
@@ -885,7 +885,7 @@ export const widgets = [
       },
     },
     defaultSize: {
-      width: 6,
+      width: 120,
       height: 30,
     },
     events: [],

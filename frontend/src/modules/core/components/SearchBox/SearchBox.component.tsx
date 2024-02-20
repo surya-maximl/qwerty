@@ -3,6 +3,7 @@ import { Props } from './SearchBoxProps.type';
 import useDebounce from "../../../shared/hooks/useDebounce";
 import useMounted from "../../../shared/hooks/useMount";
 import { SearchOutlined } from '@ant-design/icons';
+import { Input } from 'antd';
 
 export const SearchBox: React.FC<Props> = (
   (
@@ -55,7 +56,7 @@ export const SearchBox: React.FC<Props> = (
               <SearchOutlined/>
             </span>
           )}
-          <input
+          <Input
             style={{ width }}
             type="text"
             value={searchText}

@@ -193,7 +193,7 @@ const Container: React.FC<Props> = ({ canvasWidth }) => {
   // }
   function computeComponentName(componentType, currentComponents) {
     const currentComponentsForKind = Object.values(currentComponents).filter(
-      (component) => component.component.component === componentType
+      (box) => box.component.component === componentType
     );
     let found = false;
     let componentName = '';
@@ -202,7 +202,7 @@ const Container: React.FC<Props> = ({ canvasWidth }) => {
     while (!found) {
       componentName = `${componentType.toLowerCase()}${currentNumber}`;
       if (
-        Object.values(currentComponents).find((component) => component.component.name === componentName) === undefined
+        Object.values(currentComponents).find((box) => box.component.name === componentName) === undefined
       ) {
         found = true;
       }

@@ -1,10 +1,31 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState, useCallback, memo } from 'react';
+import { useEffect, useState, memo } from 'react';
 import { useDrag } from 'react-dnd';
 import { DraggableData, Position, ResizableDelta, Rnd } from 'react-rnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
-import { Box, Direction } from '../../interfaces/editor.interface';
+import { BoxProps, Direction } from '../../interfaces/editor.interface';
 import IconsMapping from '../IconsMapping/iconsMapping.component';
+import Box from './Box.component';
+import { RxButton, RxInput } from "react-icons/rx";
+import { IoTextOutline } from "react-icons/io5";
+import { PiNumberOneFill } from "react-icons/pi";
+import { MdOutlinePassword } from "react-icons/md";
+import { IoIosCheckbox } from "react-icons/io";
+import { IoIosRadioButtonOn } from "react-icons/io";
+import { FaToggleOn } from "react-icons/fa";
+import { BsTextareaResize } from "react-icons/bs";
+
+const AllIcons = {
+  "Button": RxButton,
+  "Text": IoTextOutline,
+  "TextInput": RxInput,
+  "NumberInput": PiNumberOneFill ,
+  "PasswordInput": MdOutlinePassword,
+  "Checkbox": IoIosCheckbox ,
+  "RadioButton": IoIosRadioButtonOn ,
+  "ToggleSwitch": FaToggleOn ,
+  "TextArea": BsTextareaResize
+}
 
 type Props = {
   onDragStop: (e: any, componentId: any, direction: DraggableData) => void;
@@ -21,12 +42,11 @@ type Props = {
   key: number;
   id: number;
   component: any,
-  box: Box;
-  index: any,
+  box: BoxProps;
+  index?: any,
   resizingStatusChanged: (status: boolean) => void;
   draggingStatusChanged: (status: boolean) => void;
 };
-const NO_OF_GRIDS = 43;
 
 export const DraggableBox = memo<Props>(
   ({
@@ -43,9 +63,6 @@ export const DraggableBox = memo<Props>(
   }) => {
     const [isResizing, setResizing] = useState(false);
     const [isDragging2, setDragging] = useState(false);
-    const [canDrag, setCanDrag] = useState(true);
-
-    const gridWidth = Number(canvasWidth) / NO_OF_GRIDS;
 
     const [{ isDragging }, drag, preview] = useDrag(
       () => ({
@@ -78,18 +95,9 @@ export const DraggableBox = memo<Props>(
       if (draggingStatusChanged) {
         draggingStatusChanged(isDragging2);
       }
-
-      // if (isDragging2 && !isSelectedComponent) {
-      //   setSelectedComponent(id, component);
-      // }
     }, [isDragging2]);
 
-    const changeCanDrag = useCallback(
-      (newState) => {
-        setCanDrag(newState);
-      },
-      [setCanDrag]
-    );
+    const IconToRender = AllIcons[component?.component];
 
     return (
       <>
@@ -132,14 +140,14 @@ export const DraggableBox = memo<Props>(
               bounds="parent"
             >
               <div className="w-full h-full" ref={preview}>
-                {box?.component.name}
+                <Box box={box}/>
               </div>
             </Rnd>
         ) : <div className='h-[4.5rem] w-[4.5rem] flex flex-col items-center' ref={drag} role="DraggableBox">
             <div className='w-full h-full flex items-center justify-center bg-slate-200 rounded-lg text-xl'>
-              {<IconsMapping name={component.component}/>}
+              {<IconToRender></IconToRender>}
               </div>
-            <p className='text-[.65rem] font-thin mt-1'>{component.component}</p>
+            <p className='text-[.65rem] font-thin mt-1'>{component.displayName}</p>
           </div>}
       </>
     );

@@ -1,7 +1,5 @@
-import { RxButton } from "react-icons/rx";
-
 export function capitalizeEveryWord(str: string): string {
-  if (str.length === 0) {
+  if (str===undefined || str.length === 0) {
       return str;
   }
   
