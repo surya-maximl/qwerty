@@ -8,5 +8,6 @@ import { OrganizationUser } from './entities/organization_user.entity';
   imports:[TypeOrmModule.forFeature([OrganizationUser])],
   controllers: [OrganizationUsersController],
   providers: [OrganizationUsersService],
+  exports:[OrganizationUsersService]
 })
 export class OrganizationUsersModule {}

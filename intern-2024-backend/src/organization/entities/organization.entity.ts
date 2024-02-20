@@ -12,6 +12,7 @@ import {
     BeforeInsert,
   } from 'typeorm';
   import * as uuid from 'uuid';
+import { SSOConfigs } from './sso_config.entity';
   
   @Entity({ name: 'organizations' })
   export class Organization extends BaseEntity{
@@ -29,13 +30,13 @@ import {
     @Column({ name: 'slug', unique: true })
     slug: string;
   
-    @Column({ name: 'domain' })
+    @Column({ name: 'domain', nullable:true })
     domain: string;
   
-    @Column({ name: 'enable_sign_up' })
+    @Column({ name: 'enable_sign_up', nullable:true })
     enableSignUp: boolean;
   
-    @Column({ name: 'inherit_sso' })
+    @Column({ name: 'inherit_sso', nullable:true })
     inheritSSO: boolean;
   
     @CreateDateColumn({ default: new Date(), name: 'created_at' })
@@ -44,7 +45,10 @@ import {
     @UpdateDateColumn({ default: new Date(), name: 'updated_at' })
     updatedAt: Date;
 
-    @OneToMany(() => OrganizationUser, (organizationUser) => organizationUser.organization, {cascade:true})
+    @OneToMany(() => OrganizationUser, (organizationUser) => organizationUser.organization)
     organizationUsers: OrganizationUser[];
+
+    @OneToMany(() => SSOConfigs, (ssoConfigs) => ssoConfigs.organization, { cascade: ['insert'] })
+    ssoConfigs: SSOConfigs[];
   }
   
