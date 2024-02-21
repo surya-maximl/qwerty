@@ -37,7 +37,7 @@ import * as bcrypt from 'bcrypt';
 interface JWTPayload {
   sessionId: string;
   username: string;
-  sub: string;
+  email: string;
   organizationIds: Array<string>;
   isSSOLogin: boolean;
   isPasswordLogin: boolean;
@@ -377,7 +377,7 @@ export class AuthService {
     const JWTPayload: JWTPayload = {
       sessionId: sessionId,
       username: user.id,
-      sub: user.email,
+      email: user.email,
       organizationIds: [...organizationIds],
       isSSOLogin: loggedInUser?.isSSOLogin || isInstanceSSO,
       isPasswordLogin: loggedInUser?.isPasswordLogin || isPasswordLogin,

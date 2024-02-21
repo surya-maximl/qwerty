@@ -8,14 +8,16 @@ import {
   Delete,
   Res,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { EmailService } from './email.service';
 import { SignupDto } from './dto/auth.dto';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { Request, Response, response } from 'express';
-import { IpAddress } from 'src/decorators/ip_address.decorator';
 import { AuthUserDto } from './dto/user.dto';
+import { User } from 'src/decorators/user.decorator';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller()
 export class AuthController {
@@ -53,5 +55,11 @@ export class AuthController {
     @Req() request: Request,
   ) {
     return this.authService.login(response,request,authUserDto.email,authUserDto.password);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('testing')
+  async test(@User() user:any ){
+    return user;
   }
 }
