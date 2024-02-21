@@ -3,9 +3,8 @@ import { useEffect, useState, memo } from 'react';
 import { useDrag } from 'react-dnd';
 import { DraggableData, Position, ResizableDelta, Rnd } from 'react-rnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
-import { BoxProps, Direction } from '../../interfaces/editor.interface';
-import IconsMapping from '../IconsMapping/iconsMapping.component';
-import Box from './Box.component';
+import { Direction } from '../../interfaces/editor.interface';
+import BoxComponent from './Box.component';
 import { RxButton, RxInput } from "react-icons/rx";
 import { IoTextOutline } from "react-icons/io5";
 import { PiNumberOneFill } from "react-icons/pi";
@@ -14,6 +13,8 @@ import { IoIosCheckbox } from "react-icons/io";
 import { IoIosRadioButtonOn } from "react-icons/io";
 import { FaToggleOn } from "react-icons/fa";
 import { BsTextareaResize } from "react-icons/bs";
+import { Box } from '../../interfaces/container.interface';
+import BoxOptions from './BoxOptions.component';
 
 const AllIcons = {
   "Button": RxButton,
@@ -42,7 +43,7 @@ type Props = {
   key: number;
   id: number;
   component: any,
-  box: BoxProps;
+  box: Box;
   index?: any,
   resizingStatusChanged: (status: boolean) => void;
   draggingStatusChanged: (status: boolean) => void;
@@ -109,7 +110,6 @@ export const DraggableBox = memo<Props>(
                 alignItems: 'center',
                 justifyContent: 'center',
                 padding: '0px',
-                border: '1px solid black',
                 position: 'absolute'
               }}
               maxWidth={canvasWidth}
@@ -140,12 +140,13 @@ export const DraggableBox = memo<Props>(
               bounds="parent"
             >
               <div className="w-full h-full" ref={preview}>
-                <Box box={box}/>
+                <BoxOptions/>
+                <BoxComponent box={box}/>
               </div>
             </Rnd>
         ) : <div className='h-[4.5rem] w-[4.5rem] flex flex-col items-center' ref={drag} role="DraggableBox">
-            <div className='w-full h-full flex items-center justify-center bg-slate-200 rounded-lg text-xl'>
-              {<IconToRender></IconToRender>}
+            <div className='w-full h-full flex items-center justify-center bg-secondary rounded-lg text-xl'>
+              {<IconToRender className="text-primary"></IconToRender>}
               </div>
             <p className='text-[.65rem] font-thin mt-1'>{component.displayName}</p>
           </div>}

@@ -71,8 +71,8 @@ module.exports = {
       'error',
       {
         max: 75,
-        skipBlankLines: true,
-        skipComments: true
+        // skipBlankLines: true,
+        // skipComments: true
       }
     ]
   },

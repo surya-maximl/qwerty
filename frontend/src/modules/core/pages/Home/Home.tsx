@@ -21,7 +21,7 @@ const Home: React.FC = () => {
   return (
     <Flex className="h-screen w-screen">
       <Layout>
-        <LeftPane items={[]} />
+        {/* <LeftPane items={[]} /> */}
         <Layout className="bg-slate-100">
           <AppHeader />
           <Content className="bg-white">

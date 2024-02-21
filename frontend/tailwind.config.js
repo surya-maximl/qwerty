@@ -2,7 +2,13 @@
 export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        primary: '#475569',
+        secondary: '#E2E8F0',
+        borderColor: '#CBD5E1'
+      },
+    },
     screens: {
       // max-width
       'max-2xl': { max: '1367px' },

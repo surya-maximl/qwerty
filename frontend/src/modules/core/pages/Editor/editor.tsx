@@ -8,12 +8,6 @@ import { coreActions } from "../../reducers/core.reducer";
 import { WidgetManager } from "../../components/WidgetManager/widgetManager.component";
 import { componentTypes } from "../../components/WidgetManager/widgetsComponents";
 
-type Props = {}
-
-type ContainerPropsType = {
-  canvasWidth: number
-}
-
 const Editor: React.FC = () => {
   const [canvasWidth, setCanvasWidth] = useState(0);
   const dispatch = useAppDispatch();
@@ -34,10 +28,9 @@ const Editor: React.FC = () => {
     return _canvasWidth;
   };
 
-  const containerProps: ContainerPropsType = {
+  const containerProps: { canvasWidth: number } = {
     canvasWidth: canvasWidth
   }
-
   
   return (
     <>

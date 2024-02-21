@@ -124,7 +124,7 @@ export const WidgetManager: React.FC<WidgetManagerPropsType> = function WidgetMa
   }
 
   return (
-    <div className='border-[1px] border-solid border-t-0 border-slate-500 w-full py-6 px-4'>
+    <div className='border-[1px] border-solid border-t-0 border-borderColor w-full py-6 px-4'>
       <p className='font-semibold text-lg'>Components</p>
       <div>
         <SearchBox

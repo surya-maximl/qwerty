@@ -5,8 +5,6 @@ import type { MenuProps } from 'antd';
 import { Dropdown } from 'antd';
 import Avatar from 'antd/es/avatar/avatar';
 
-import './Profile.scss';
-
 import { useNavigate } from 'react-router-dom';
 
 import { type AuthState } from '../../../authentication/interfaces';

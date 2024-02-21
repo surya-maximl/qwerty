@@ -8,8 +8,6 @@ import {
 } from '@ant-design/icons';
 import { Layout, Menu, type MenuProps } from 'antd';
 
-import './leftPane.scss';
-
 import { useMatches, useNavigate } from 'react-router-dom';
 
 const COMPANY_LOGO_URL_LARGE: string = import.meta.env.VITE_COMPANY_LOGO_URL_LARGE;

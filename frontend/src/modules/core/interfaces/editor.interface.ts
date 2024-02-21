@@ -2,35 +2,30 @@ export interface EditorState {
   canvasWidth: number;
 }
 
-export type Direction = 'top' | 'right' | 'bottom' | 'left' | 'topRight' | 'bottomRight' | 'bottomLeft' | 'topLeft';
+export type Direction =
+  | 'top'
+  | 'right'
+  | 'bottom'
+  | 'left'
+  | 'topRight'
+  | 'bottomRight'
+  | 'bottomLeft'
+  | 'topLeft';
 
 export type DraggableData = {
-  node: HTMLElement,
-  x: number,
-  y: number,
-  deltaX: number, deltaY: number,
-  lastX: number, lastY: number
+  node: HTMLElement;
+  x: number;
+  y: number;
+  deltaX: number;
+  deltaY: number;
+  lastX: number;
+  lastY: number;
 };
 
-export type BoxProps = {
-  key: number,
-  id: number;
-  title: string;
-  component: string;
-  zoomLevel: number;
-  parent: string;
-  top: number;
-  left: number;
-  width: number;
-  height: number;
-}
+export type DraggableEvent =
+  | React.MouseEvent<HTMLElement | SVGElement>
+  | React.TouchEvent<HTMLElement | SVGElement>
+  | MouseEvent
+  | TouchEvent;
 
-export type DraggableEvent = React.MouseEvent<HTMLElement | SVGElement>
-    | React.TouchEvent<HTMLElement | SVGElement>
-    | MouseEvent
-    | TouchEvent
-
-  export type DraggableEventHandler = (
-    e: DraggableEvent,
-    data: DraggableData
-  ) => void | false;
+export type DraggableEventHandler = (e: DraggableEvent, data: DraggableData) => void | false;
