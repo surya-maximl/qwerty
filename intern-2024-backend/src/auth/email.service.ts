@@ -8,7 +8,10 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 export class EmailService {
+
   constructor(private readonly configService: ConfigService) {}
+
+
 
   async sendEmail(to: string, subject: string, html: string) {
     const email = process.env.EMAIL;
@@ -56,13 +59,12 @@ export class EmailService {
         </head>
         <body>
           <p>Hi ${name || ''},</p>
-          ${
-            organizationInvitationToken && sender && organizationName
-              ? `<span>
+          ${organizationInvitationToken && sender && organizationName
+        ? `<span>
               ${sender} has invited you to use ToolJet workspace: ${organizationName}.
             </span>`
-              : ''
-          }
+        : ''
+      }
           <span>
             Please use the link below to set up your account and get started.
           </span>

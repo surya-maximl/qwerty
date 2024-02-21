@@ -51,10 +51,13 @@ export class AuthService {
     private readonly entityManager: EntityManager,
     private readonly organizationService: OrganizationService,
     private readonly organizationUsersService: OrganizationUsersService,
+
     private readonly sessionService: SessionService,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
-  ) {}
+
+  ) { }
+
 
   private async validateUser(
     email: string,
@@ -350,13 +353,16 @@ export class AuthService {
     manager?: EntityManager,
   ) {
     const organizationIds = new Set([
+
       ...(loggedInUser?.id === user.id
         ? loggedInUser?.organizationIds || []
         : []),
       organization.id,
+
     ]);
 
     let sessionId = loggedInUser?.sessionId;
+
 
     if (loggedInUser?.id !== user.id) {
       const session = await this.sessionService.createSession(
@@ -366,6 +372,7 @@ export class AuthService {
       );
       sessionId = session.id;
     }
+
 
     const JWTPayload: JWTPayload = {
       sessionId: sessionId,
