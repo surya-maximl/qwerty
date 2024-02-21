@@ -92,7 +92,7 @@ export class User extends BaseEntity {
   @Column({ name: 'company_size', nullable: true, default: null })
   companySize?: string;
 
-  @Column({ name: 'password_retry_count', default: 5 })
+  @Column({ name: 'password_retry_count', default: 0 })
   passwordRetryCount: number;
 
   @CreateDateColumn({ default: new Date(), name: 'created_at' })

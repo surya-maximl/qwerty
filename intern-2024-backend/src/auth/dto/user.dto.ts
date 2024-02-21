@@ -1,18 +1,18 @@
 import { Transform } from 'class-transformer';
-import { IsNotEmpty, IsOptional, IsPhoneNumber, IsString, MinLength } from 'class-validator';
-import { sanitizeInput } from 'src/helpers/utils.helper';
+import { IsEmail, IsNotEmpty, IsOptional, IsPhoneNumber, IsString, MinLength } from 'class-validator';
+import { lowercaseString, sanitizeInput } from 'src/helpers/utils.helper';
 
 export class CreateUserDto {
   @IsString()
   @IsOptional()
   @IsNotEmpty()
   @Transform(({ value }) => sanitizeInput(value))
-  first_name: string;
+  firstName: string;
 
   @IsString()
   @IsOptional()
   @Transform(({ value }) => sanitizeInput(value))
-  last_name: string;
+  lastName: string;
 
   @IsString()
   @IsOptional()
@@ -23,6 +23,7 @@ export class CreateUserDto {
   @IsString()
   @IsOptional()
   @IsNotEmpty()
+  @IsPhoneNumber()
   phoneNumber: string;
 
   @IsString()
@@ -55,3 +56,14 @@ export class CreateUserDto {
   @Transform(({ value }) => sanitizeInput(value))
   source: string;
 }
+
+export class AuthUserDto {
+    @IsEmail()
+    @Transform(({ value }) => lowercaseString(value))
+    @IsNotEmpty()
+    email: string;
+  
+    @IsString()
+    @IsNotEmpty()
+    password: string;
+  }

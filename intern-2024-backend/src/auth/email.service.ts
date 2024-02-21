@@ -1,15 +1,18 @@
+import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
 import {
   generateInviteURL,
   generateOrgInviteURL,
 } from 'src/helpers/utils.helper';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 export class EmailService {
-  constructor() {}
+  constructor(private readonly configService: ConfigService) {}
 
   async sendEmail(to: string, subject: string, html: string) {
-    const email = 'your email';
-    const password = 'password';
+    const email = process.env.EMAIL;
+    const password = process.env.PASSWORD;
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       secure: true,

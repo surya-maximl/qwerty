@@ -3,6 +3,7 @@
 /node_modules
 /build
 src/config/database/ayush_database.module.ts
+.env
 
 # Logs
 logs

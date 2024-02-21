@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   NotAcceptableException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import {
@@ -16,16 +17,31 @@ import { OrganizationService } from 'src/organization/organization.service';
 import {
   SOURCE,
   URL_SSO_SOURCE,
+  USER_STATUS,
+  getUserErrorMessages,
   getUserStatusAndSource,
   isPasswordMandatory,
   lifecycleEvents,
 } from 'src/helpers/user_lifecycle';
-import { Response } from 'express';
+import { CookieOptions, Request, Response } from 'express';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { User } from 'src/users/entities/user.entity';
 import { OrganizationUser } from 'src/organization_users/entities/organization_user.entity';
-import { RequestContext } from 'src/helpers/request-context';
 import { SessionService } from 'src/users/session.service';
+import { ConfigService } from '@nestjs/config';
+import { decamelizeKeys } from 'humps';
+import * as requestIp from 'request-ip';
+import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
+
+interface JWTPayload {
+  sessionId: string;
+  username: string;
+  sub: string;
+  organizationIds: Array<string>;
+  isSSOLogin: boolean;
+  isPasswordLogin: boolean;
+}
 
 @Injectable()
 export class AuthService {
@@ -35,8 +51,106 @@ export class AuthService {
     private readonly entityManager: EntityManager,
     private readonly organizationService: OrganizationService,
     private readonly organizationUsersService: OrganizationUsersService,
-    private readonly sessionService: SessionService
+    private readonly sessionService: SessionService,
+    private readonly configService: ConfigService,
+    private readonly jwtService: JwtService,
   ) {}
+
+  private async validateUser(
+    email: string,
+    password: string,
+    organizationId?: string,
+  ) {
+    const user = await this.usersService.findByEmail(
+      email,
+      organizationId,
+      WORKSPACE_USER_STATUS.ACTIVE,
+    );
+
+    if (!user) {
+      throw new UnauthorizedException('Invalid Credentials');
+    }
+
+    if (user.status !== USER_STATUS.ACTIVE) {
+      throw new UnauthorizedException(getUserErrorMessages(user.status));
+    }
+
+    const passwordRetryAllowed = 5;
+
+    if (user.passwordRetryCount >= 5) {
+      throw new UnauthorizedException('Reached Maximum Password Retry Limit');
+    }
+    // console.log(password);
+    // console.log(user.password);
+    const isValid = await bcrypt.compare(password, user.password);
+
+    if (!isValid) {
+      await this.usersService.updateUser(user.id, {
+        passwordRetryCount: user.passwordRetryCount + 1,
+      });
+      throw new UnauthorizedException('Invalid Credentials');
+    }
+
+    return user;
+  }
+
+  async login(
+    response: Response,
+    request:Request,
+    email: string,
+    password: string,
+    organizationId?: string,
+    loggedInUser?: User,
+  ) {
+    const user = await this.validateUser(email, password, organizationId);
+    let organization:Organization;
+    return await this.dbTransactionWrap(async (manager: EntityManager) => {
+      if (!organizationId) {
+        const organizationList: Organization[] =
+          await this.organizationService.findOrganizationWithLoginSupport(
+            user,
+            'form',
+          );
+
+        const defaultOrgDetails: Organization = organizationList?.find(
+          (e) => e.id === user.defaultOrganizationId,
+        );
+        if(defaultOrgDetails){
+          organization=defaultOrgDetails;
+        }
+        else if(organizationList?.length>0){
+          organization = organizationList[0];
+        }
+        else{
+          const {name, slug} = generateNextNameAndSlug("My Workspace");
+          organization = await this.organizationService.create(name,slug,user,manager);
+        }
+
+        user.organizationId = organization.id;
+      }
+      else{
+        user.organizationId = organizationId;
+
+        organization = await this.organizationService.get(user.organizationId);
+
+        const formConfigs = organization?.ssoConfigs?.find((sso)=>sso.sso==='form');
+        if(!formConfigs?.enabled){
+          throw new UnauthorizedException('Password Login is disabled for the organization');
+        }
+      }
+
+      await this.usersService.updateUser(
+        user.id,
+        {
+          ...(user.defaultOrganizationId !== user.organizationId && {defaultOrganizationId:organization.id}),
+          passwordRetryCount:0
+        },
+        manager
+      );
+
+      return await this.generateLoginResultPayload(response,request,user,organization,false,true,loggedInUser);
+    });
+  }
 
   async signup(email: string, name: string, password: string) {
     const existingUser = await this.usersService.findByEmail(email);
@@ -49,7 +163,7 @@ export class AuthService {
     }
 
     if (existingUser?.invitationToken) {
-      this.emailService
+      await this.emailService
         .sendWelcomeEmail(
           existingUser.email,
           existingUser.firstName,
@@ -112,6 +226,7 @@ export class AuthService {
 
   async setupAccountFromInvitationToken(
     response: Response,
+    request: Request,
     createUserDto: CreateUserDto,
   ) {
     const {
@@ -215,6 +330,7 @@ export class AuthService {
 
       return this.generateLoginResultPayload(
         response,
+        request,
         user,
         organization,
         isInstanceSSOLogin,
@@ -225,6 +341,7 @@ export class AuthService {
 
   async generateLoginResultPayload(
     response: Response,
+    request: Request,
     user: User,
     organization: DeepPartial<Organization>,
     isInstanceSSO: boolean,
@@ -232,25 +349,57 @@ export class AuthService {
     loggedInUser?: User,
     manager?: EntityManager,
   ) {
-
-    const request = RequestContext?.currentContext?.req;
     const organizationIds = new Set([
-      ...(loggedInUser?.id===user.id ? loggedInUser?.organizationIds || [] : []),
-      organization.id
+      ...(loggedInUser?.id === user.id
+        ? loggedInUser?.organizationIds || []
+        : []),
+      organization.id,
     ]);
 
     let sessionId = loggedInUser?.sessionId;
 
-    if(loggedInUser?.id !==user.id){
+    if (loggedInUser?.id !== user.id) {
       const session = await this.sessionService.createSession(
         user.id,
-        `IP:${request?.clientIp || requestIp.getClientIp(request) || 'unknown'} UA: ${request?.header['user-agent']|| 'unknown'}`,
-        manager
+        `IP:${request?.clientIp || requestIp.getClientIp(request) || 'unknown'} UA: ${request?.headers['user-agent'] || 'unknown'}`,
+        manager,
       );
       sessionId = session.id;
     }
 
+    const JWTPayload: JWTPayload = {
+      sessionId: sessionId,
+      username: user.id,
+      sub: user.email,
+      organizationIds: [...organizationIds],
+      isSSOLogin: loggedInUser?.isSSOLogin || isInstanceSSO,
+      isPasswordLogin: loggedInUser?.isPasswordLogin || isPasswordLogin,
+    };
 
+    user.organizationId = organization.id;
+
+    const cookieOptions: CookieOptions = {
+      httpOnly: true,
+      sameSite: 'strict',
+      maxAge: 2 * 365 * 24 * 60 * 60 * 1000,
+      secure: true,
+    };
+
+    response.cookie(
+      'tj_auth_token',
+      this.jwtService.sign(JWTPayload),
+      cookieOptions,
+    );
+
+    return decamelizeKeys({
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      currentOrganizationId: organization.id,
+      currentOrgnizationId: organization.id,
+      currentOrganizationSlug: organization.slug,
+    });
   }
 
   async dbTransactionWrap(

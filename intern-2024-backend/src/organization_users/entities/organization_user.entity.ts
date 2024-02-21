@@ -38,7 +38,7 @@ import * as uuid from 'uuid';
     @Column({ name: 'user_id' })
     userId: string;
   
-    @Column({ name: 'invitation_token' })
+    @Column({ name: 'invitation_token', nullable:true })
     invitationToken: string;
   
     @CreateDateColumn({ default: new Date(), name: 'created_at' })
