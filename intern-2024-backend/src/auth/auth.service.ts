@@ -36,7 +36,7 @@ export class AuthService {
     private readonly organizationService: OrganizationService,
     private readonly organizationUsersService: OrganizationUsersService,
     private readonly sessionService: SessionService
-  ) {}
+  ) { }
 
   async signup(email: string, name: string, password: string) {
     const existingUser = await this.usersService.findByEmail(email);
@@ -235,20 +235,22 @@ export class AuthService {
 
     const request = RequestContext?.currentContext?.req;
     const organizationIds = new Set([
-      ...(loggedInUser?.id===user.id ? loggedInUser?.organizationIds || [] : []),
+      ...(loggedInUser?.id === user.id ? loggedInUser?.organizationIds || [] : []),
       organization.id
     ]);
 
     let sessionId = loggedInUser?.sessionId;
 
-    if(loggedInUser?.id !==user.id){
-      const session = await this.sessionService.createSession(
-        user.id,
-        `IP:${request?.clientIp || requestIp.getClientIp(request) || 'unknown'} UA: ${request?.header['user-agent']|| 'unknown'}`,
-        manager
-      );
-      sessionId = session.id;
-    }
+    // if(loggedInUser?.id !==user.id){
+    //   const session = await this.sessionService.createSession(
+    //     user.id,
+    //     `IP:${request?.clientIp || requestIp.getClientIp(request) || 'unknown'} UA: ${request?.header['user-agent']|| 'unknown'}`,
+    //     manager
+    //   );
+    //   sessionId = session.id;
+    // }
+
+    // return sessionId
 
 
   }

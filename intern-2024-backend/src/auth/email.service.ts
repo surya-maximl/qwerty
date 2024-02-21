@@ -5,11 +5,11 @@ import {
 } from 'src/helpers/utils.helper';
 
 export class EmailService {
-  constructor() {}
+  constructor() { }
 
   async sendEmail(to: string, subject: string, html: string) {
-    const email = 'your email';
-    const password = 'password';
+    const email = process.env.EMAIL;
+    const password = process.env.PASSWORD;
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       secure: true,
@@ -53,13 +53,12 @@ export class EmailService {
         </head>
         <body>
           <p>Hi ${name || ''},</p>
-          ${
-            organizationInvitationToken && sender && organizationName
-              ? `<span>
+          ${organizationInvitationToken && sender && organizationName
+        ? `<span>
               ${sender} has invited you to use ToolJet workspace: ${organizationName}.
             </span>`
-              : ''
-          }
+        : ''
+      }
           <span>
             Please use the link below to set up your account and get started.
           </span>
