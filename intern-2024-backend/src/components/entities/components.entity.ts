@@ -10,7 +10,7 @@ import {
 
 
 @Entity({ name: 'components' })
-@Index('idx_component_page_id', ['pageId'])
+// @Index('idx_component_page_id', ['pageId'])
 export class ComponentEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -21,8 +21,8 @@ export class ComponentEntity {
   @Column()
   type: string;
 
-  @Column({ nullable: true })
-  parent: string;
+  // @Column({ nullable: true })
+  // parent: string;
 
   @Column('simple-json')
   properties: any;

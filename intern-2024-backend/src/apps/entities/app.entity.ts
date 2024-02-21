@@ -23,6 +23,8 @@ export class AppEntity extends BaseEntity {
 
   // @Column({ name: 'slug', unique: true })
   // slug: string;
+  @Column({ name: 'icon', default: null })
+  icon: string;
 
   @Column({ name: 'is_public', default: true })
   isPublic: boolean;
@@ -30,7 +32,7 @@ export class AppEntity extends BaseEntity {
   @Column({ name: 'is_maintenance_on', default: false })
   isMaintenanceOn: boolean;
 
-  @Column({ name: 'current_version_id' })
+  @Column({ name: 'current_version_id', default: "v1" })
   currentVersionId: string;
 
   @Column({ name: 'user_id' })

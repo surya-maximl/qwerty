@@ -6,12 +6,23 @@ export class ComponentsController {
   constructor(private readonly componentService: ComponentsService) { }
 
   @Get()
-  getAllComponent() {
+  async getAllComponent() {
     return this.componentService.getAllComponents();
   }
 
   @Post()
-  createComponent() {
+  async createComponent() {
+
+  }
+
+
+  @Post()
+  async updateComponent() {
+
+  }
+
+  @Post()
+  async deleteComponent() {
 
   }
 
