@@ -25,9 +25,8 @@ export class ComponentsService {
   async createComponent(content) {
     const name = content.name;
     const type = content.component;
-    delete content.id
     const component = await this.components.create({ name, component: type });
-    Object.assign(component, content['e72ad8d8-062c-43bd-bd49-80a8a969de56']);
+    Object.assign(component, content);
     // console.log(component);
     const componentSave = await this.components.save(component);
     // console.log(componentSave);
@@ -49,6 +48,6 @@ export class ComponentsService {
     const findComponent = await this.components.exists({ where: { id } })
     if (!findComponent) throw new NotFoundException("No Component Found");
     const deleteComponent = await this.components.delete(id);
-    return "Component Deleted Successfully";
+    return { msg: "Component Deleted Successfully" };
   }
 }

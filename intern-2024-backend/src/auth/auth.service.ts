@@ -99,14 +99,14 @@ export class AuthService {
 
   async login(
     response: Response,
-    request:Request,
+    request: Request,
     email: string,
     password: string,
     organizationId?: string,
     loggedInUser?: User,
   ) {
     const user = await this.validateUser(email, password, organizationId);
-    let organization:Organization;
+    let organization: Organization;
     return await this.dbTransactionWrap(async (manager: EntityManager) => {
       if (!organizationId) {
         const organizationList: Organization[] =
@@ -118,26 +118,26 @@ export class AuthService {
         const defaultOrgDetails: Organization = organizationList?.find(
           (e) => e.id === user.defaultOrganizationId,
         );
-        if(defaultOrgDetails){
-          organization=defaultOrgDetails;
+        if (defaultOrgDetails) {
+          organization = defaultOrgDetails;
         }
-        else if(organizationList?.length>0){
+        else if (organizationList?.length > 0) {
           organization = organizationList[0];
         }
-        else{
-          const {name, slug} = generateNextNameAndSlug("My Workspace");
-          organization = await this.organizationService.create(name,slug,user,manager);
+        else {
+          const { name, slug } = generateNextNameAndSlug("My Workspace");
+          organization = await this.organizationService.create(name, slug, user, manager);
         }
 
         user.organizationId = organization.id;
       }
-      else{
+      else {
         user.organizationId = organizationId;
 
         organization = await this.organizationService.get(user.organizationId);
 
-        const formConfigs = organization?.ssoConfigs?.find((sso)=>sso.sso==='form');
-        if(!formConfigs?.enabled){
+        const formConfigs = organization?.ssoConfigs?.find((sso) => sso.sso === 'form');
+        if (!formConfigs?.enabled) {
           throw new UnauthorizedException('Password Login is disabled for the organization');
         }
       }
@@ -145,13 +145,13 @@ export class AuthService {
       await this.usersService.updateUser(
         user.id,
         {
-          ...(user.defaultOrganizationId !== user.organizationId && {defaultOrganizationId:organization.id}),
-          passwordRetryCount:0
+          ...(user.defaultOrganizationId !== user.organizationId && { defaultOrganizationId: organization.id }),
+          passwordRetryCount: 0
         },
         manager
       );
 
-      return await this.generateLoginResultPayload(response,request,user,organization,false,true,loggedInUser);
+      return await this.generateLoginResultPayload(response, request, user, organization, false, true, loggedInUser);
     });
   }
 
@@ -395,7 +395,7 @@ export class AuthService {
     response.cookie(
       'tj_auth_token',
       this.jwtService.sign(JWTPayload),
-      cookieOptions,
+      // cookieOptions,
     );
 
     return decamelizeKeys({
