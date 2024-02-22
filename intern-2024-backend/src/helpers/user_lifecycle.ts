@@ -80,3 +80,12 @@ export function isPasswordMandatory(source: any): boolean {
   }
   return false;
 }
+
+export function getUserErrorMessages(status: any) {
+  switch (status) {
+    case USER_STATUS.ARCHIVED:
+      return 'The user has been archived, please contact the administrator to activate the account';
+    default:
+      return 'The user is not active, please use the invite link shared to activate';
+  }
+}
