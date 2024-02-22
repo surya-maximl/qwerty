@@ -15,6 +15,9 @@ export class ComponentEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Column()
+  userId: string;
+
   @Column({ type: 'double precision', nullable: true })
   top: number;
 
