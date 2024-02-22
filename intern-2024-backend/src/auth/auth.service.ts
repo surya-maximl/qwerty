@@ -392,9 +392,10 @@ export class AuthService {
       secure: true,
     };
 
+    const userToken = this.jwtService.sign(JWTPayload);
     response.cookie(
       'tj_auth_token',
-      this.jwtService.sign(JWTPayload),
+      userToken,
       cookieOptions,
     );
 
@@ -406,7 +407,13 @@ export class AuthService {
       currentOrganizationId: organization.id,
       currentOrgnizationId: organization.id,
       currentOrganizationSlug: organization.slug,
+      token:userToken
     });
+  }
+
+  async logout(userId:string,sessionId:string,response:Response){
+    response.clearCookie('tj_auth_token');
+    return await this.sessionService.terminateSession(userId,sessionId,response);
   }
 
   async dbTransactionWrap(
