@@ -30,7 +30,7 @@ export class AppsService {
   }
 
   async getApp(id: string) {
-    id = "4a936ef4-a03f-440f-b54d-22011e383d6a";
+    console.log(id)
     const findApp = await this.appEntitiy.findOne({ where: { id } })
     if (!findApp) throw new NotFoundException("App Not found");
     return findApp;
@@ -41,7 +41,7 @@ export class AppsService {
     const findApp = await this.appEntitiy.exists({ where: { id: appId } })
     if (findApp) {
       const app = this.appEntitiy.delete({ id: appId })
-      return "App Deleted";
+      return { msg: "App Deleted" };
     }
     throw new NotFoundException("App not Found");
   }
