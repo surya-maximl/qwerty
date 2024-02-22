@@ -18,7 +18,7 @@ export class ComponentEntity {
   @Column()
   name: string;
 
-  @Column()
+  @Column({nullable:true})
   type: string;
 
   // @Column({ nullable: true })
@@ -39,7 +39,7 @@ export class ComponentEntity {
   @Column('simple-json', { name: 'display_preferences', nullable: true })
   displayPreferences: any;
 
-  @Column('simple-json')
+  @Column('simple-json',{nullable:true})
   validation: any;
 
   @CreateDateColumn({ default: () => 'now()', name: 'created_at' })

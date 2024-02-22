@@ -1,14 +1,19 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { CreateAppDTO } from './dtos/create-app.dto';
 import { AppsService } from './apps.service';
+import { AuthGuard } from '@nestjs/passport';
+import { User } from 'src/decorators/user.decorator';
 
+@UseGuards(AuthGuard('jwt'))
 @Controller('apps')
 export class AppsController {
 
   constructor(private readonly appsService: AppsService) { }
 
+  
   @Post()
-  async createApp(@Body() createApp: CreateAppDTO) {
+  async createApp(@Body() createApp: CreateAppDTO, @User() user) {
+    console.log(user);
     console.log(createApp);
     const app = this.appsService.create(createApp, "1234");
 
