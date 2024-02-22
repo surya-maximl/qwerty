@@ -18,12 +18,14 @@ import { Request, Response, response } from 'express';
 import { AuthUserDto } from './dto/user.dto';
 import { User } from 'src/decorators/user.decorator';
 import { AuthGuard } from '@nestjs/passport';
+import { SessionService } from 'src/users/session.service';
 
 @Controller()
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly emailService: EmailService,
+    private readonly sessionService:SessionService
   ) {}
 
   @Post('signup')
@@ -61,5 +63,12 @@ export class AuthController {
   @Get('testing')
   async test(@User() user:any ){
     return user;
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('logout')
+  async terminateUserSession(@User() user, @Res({ passthrough: true }) response: Response) {
+    return await this.authService.logout(user.id, user.sessionId, response);
+    
   }
 }

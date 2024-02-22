@@ -30,8 +30,8 @@ export class ComponentEntity {
   @Column({ type: 'double precision', nullable: true })
   height: number;
 
-  @Column()
-  name: string;
+  @Column({nullable:true})
+  type: string;
 
   @Column({ nullable: true })
   component: string;
@@ -41,6 +41,7 @@ export class ComponentEntity {
 
   @Column({ nullable: true })
   displayName: string;
+
 
   // @Column({ nullable: true })
   // parent: string;
@@ -77,8 +78,13 @@ export class ComponentEntity {
   @Column('simple-json', { nullable: true })
   exposedVariables: any;
 
+
+  @Column('simple-json',{nullable:true})
+  validation: any;
+
   @Column('simple-json', { nullable: true })
   actions: any;
+
 
   @CreateDateColumn({ default: () => 'now()', name: 'created_at' })
   createdAt: Date;

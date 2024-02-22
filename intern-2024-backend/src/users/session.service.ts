@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
 import { UserSessions } from './entities/user_sessions.entity';
 import { USER_STATUS } from 'src/helpers/user_lifecycle';
+import { Response } from 'express';
 
 @Injectable()
 export class SessionService {
@@ -63,6 +64,17 @@ export class SessionService {
       return await this.entityManager.transaction(async (manager) => {
         return await operation(manager);
       });
+    }
+  }
+
+  async terminateSession(userId:string,sessionId:string,response:Response){
+    response.clearCookie('tj_auth_token');
+    await this.dbTransactionWrap(async(manager:EntityManager)=>{
+        await manager.delete(UserSessions,{id:sessionId,userId});
+    });
+    return {
+        success:true,
+        message:"User Logged Out Successfully"
     }
   }
 }
