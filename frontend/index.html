@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script>
+      var base_href = '/';
+      var tenantCode = null;
+      function setBaseHref() {
+        console.log('Set base href Call ');
+        const pathName = window.location.pathname;
+        const pathSplit = pathName.split('/');
+        const anchorPrefix = pathSplit[2];
+        console.log('pathName ', pathName, 'pathSplit ', pathSplit, 'anchorPrefix ', anchorPrefix);
+        if (anchorPrefix === 'am') {
+          let localTenantCode = pathSplit[1];
+          base_href = '/' + localTenantCode + '/am/';
+          tenantCode = localTenantCode;
+          console.log(
+            'localTenantCode ',
+            localTenantCode,
+            'base_href ',
+            base_href,
+            'tenantCode ',
+            tenantCode
+          );
+        }
+        console.log('base_href ', base_href);
+        document.write("<base href='" + base_href + "' />");
+      }
+
+      setBaseHref();
+    </script>
+    <meta charset="UTF-8" />
+    <!-- <link rel="icon" type="image/svg+xml" href="./vite.svg" /> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tooljet</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="./src/main.tsx"></script>
+  </body>
+</html>
