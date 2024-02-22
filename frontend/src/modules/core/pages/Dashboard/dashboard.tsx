@@ -17,7 +17,7 @@ const Dashboard = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [apps, setApps] = useState<appType[]>([
-    { appId: '123', title: 'demo', versions: { '1': { version: 'v1', boxes: {} } }, userId: '456' }
+    // { appId: '123', title: 'demo', versions: { '1': { version: 'v1', boxes: {} } }, userId: '456' }
     // { appId: '123', title: 'demo', versions: { '1': { version: 'v1', boxes: {} } }, userId: '456' }
   ]);
 
