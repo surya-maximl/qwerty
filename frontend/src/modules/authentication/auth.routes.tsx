@@ -4,6 +4,7 @@ import { ProtectedRoutes } from '../shared/components/protected-routes.component
 import { RootError } from '../shared/components/route-error';
 import Login from './pages/Login/Login';
 import Signup from './pages/Signup/Signup';
+import Confirmation from './pages/Confirmation/Confirmation';
 
 export const AuthRoutes: RouteObject[] = [
   {
@@ -19,6 +20,11 @@ export const AuthRoutes: RouteObject[] = [
       {
         path: 'signup',
         element: <Signup />,
+        errorElement: <RootError />
+      },
+      {
+        path: 'confirmation',
+        element: <Confirmation />,
         errorElement: <RootError />
       }
     ]
