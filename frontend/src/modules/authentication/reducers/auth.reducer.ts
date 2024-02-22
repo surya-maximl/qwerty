@@ -11,21 +11,18 @@ const authSlice = createSlice({
   name: 'auth',
   initialState: AUTH_INITIAL_STATE,
   reducers: {
-    login: (state: AuthState) => {
-      // if (localStorage.getItem('accessToken') !== null) {
-      //   state.loggedIn = true;
-      // }
+    login: (state: AuthState, action: any) => {
       state.loggedIn = true;
-      localStorage.setItem('accessToken', '<access-token>')
+      state.user = action.payload;
     },
     logout: (state: AuthState) => {
       state.loggedIn = false;
       localStorage.removeItem('accessToken');
       // localStorage.removeItem('refreshToken');
     },
-    // setUser: (state: AuthState, action: PayloadAction<any>) => {
-    //   state.user = action.payload;
-    // }
+    setUser: (state: AuthState, action: any) => {
+      state.user = action.payload;
+    }
   }
 });
 

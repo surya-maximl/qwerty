@@ -18,6 +18,7 @@ export const CoreRoutes: RouteObject[] = [
     errorElement: <RootError />,
     children: [
       { index: true, element: <Dashboard /> },
+      { path: ':id', element: <Dashboard /> },
       { path: 'editor', element: <Editor /> }
     ]
   }

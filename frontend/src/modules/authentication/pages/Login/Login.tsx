@@ -5,15 +5,29 @@ import { Link } from 'react-router-dom';
 
 import { login } from '../../reducers';
 import { useAppDispatch } from '../../shared/hooks/useAppDispatch';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const { Title, Paragraph } = Typography;
 
 const Login: React.FC = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const [form] = Form.useForm();
 
-  function handleLogin() {
-    dispatch(login());
+  const handleLogin = async(values: any) => {
+    const data = {
+      "email": values.email,
+      "password": values.password
+    }
+    try {
+      const res = await axios.post("http://localhost:3000/authenticate", data);
+      // console.log(res.data.id);
+      dispatch(login(res.data));
+      navigate(`/app/${res.data.id}`)
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   return (
@@ -33,7 +47,7 @@ const Login: React.FC = () => {
           </Paragraph>
         </Flex>
         <div className="w-full max-w-xs">
-          <Form layout="vertical" form={form} className="w-full">
+          <Form layout="vertical" form={form} className="w-full" onFinish={handleLogin}>
             <Form.Item
               name="email"
               label="Email"
@@ -49,7 +63,7 @@ const Login: React.FC = () => {
               <Input prefix={<LockOutlined />} type="password" placeholder="Enter password" />
             </Form.Item>
             <Form.Item>
-              <Button type="primary" onClick={handleLogin} size="large" className="w-full">
+              <Button type="primary" htmlType='submit' size="large" className="w-full">
                 Login (development)
               </Button>
             </Form.Item>

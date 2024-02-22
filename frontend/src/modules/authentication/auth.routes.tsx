@@ -23,7 +23,7 @@ export const AuthRoutes: RouteObject[] = [
         errorElement: <RootError />
       },
       {
-        path: 'confirmation',
+        path: 'invitations/:invitationId',
         element: <Confirmation />,
         errorElement: <RootError />
       }

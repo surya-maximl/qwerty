@@ -71,10 +71,10 @@ export const generateInviteURL = (
   organizationId?: string,
   source?: string,
 ) => {
-  const host = 'http://localhost:3000';
+  const host = 'http://localhost:5173';
   const subpath = 'login';
 
-  return `${host}/invitations/${invitationToken}${
+  return `${host}/auth/invitations/${invitationToken}${
     organizationToken
       ? `/workspaces/${organizationToken}${organizationId ? `?oid=${organizationId}` : ''}`
       : ''

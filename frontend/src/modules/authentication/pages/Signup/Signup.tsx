@@ -2,6 +2,7 @@ import React from 'react';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Flex, Form, Input, Typography } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const { Title, Paragraph } = Typography;
 
@@ -9,8 +10,20 @@ const Signup: React.FC = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
 
-  function handleSignup() {
-    navigate('../login');
+  const handleSignup = async (values: any) => {
+    console.log('Received values of form: ', values);
+    const data = {
+      "email": values.email,
+      "password": values.password,
+      "name": values.name
+    }
+    try {
+      const res = await axios.post("http://localhost:3000/signup", data);
+      console.log(res);
+    } catch (e) {
+      console.log(e);
+    }
+      //   navigate('../login');
   }
 
   return (
@@ -30,9 +43,9 @@ const Signup: React.FC = () => {
           </Paragraph>
         </Flex>
         <div className="w-full max-w-xs">
-          <Form layout="vertical" form={form} className="w-full">
+          <Form layout="vertical" form={form} className="w-full" onFinish={handleSignup}>
             <Form.Item
-              name="fullName"
+              name="name"
               label="Name"
               rules={[{ required: true, message: 'Please enter a valid name!' }]}
             >
@@ -54,7 +67,7 @@ const Signup: React.FC = () => {
             </Form.Item>
             <Form.Item>
               <Button
-                disabled
+                htmlType="submit"
                 type="primary"
                 onClick={handleSignup}
                 size="large"

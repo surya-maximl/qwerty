@@ -16,7 +16,7 @@
     "@ant-design/icons": "^5.3.0",
     "@reduxjs/toolkit": "^2.0.1",
     "antd": "^5.12.7",
-    "axios": "^1.6.5",
+    "axios": "^1.6.7",
     "dotenv": "^16.3.1",
     "eslint-plugin-react-func": "^0.1.18",
     "fuse.js": "^7.0.0",

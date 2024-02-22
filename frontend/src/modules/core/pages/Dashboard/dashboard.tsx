@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Button, Dropdown, Flex, Image, Input, Layout, Typography } from 'antd';
+import axios from 'axios';
 import { BsSunFill } from 'react-icons/bs';
 import { FaRegEdit } from 'react-icons/fa';
 import { IoMdAdd } from 'react-icons/io';
@@ -8,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 
 import dashboardImage from '../../../../assets/dashboard.svg';
 import { useAppDispatch } from '../../../shared/hooks/useAppDispatch';
+import { useAuth } from '../../../shared/hooks/useAuth';
 import LeftPanel from '../../components/Editor/LeftPanel.component';
 import { items } from '../../constants/dashboard.constants';
 import { appType } from '../../interfaces/dashboard.interface';
@@ -16,14 +18,65 @@ import { coreActions } from '../../reducers/core.reducer';
 const Dashboard = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(false);
+  const [appName, setAppName] = useState('');
   const [apps, setApps] = useState<appType[]>([
     // { appId: '123', title: 'demo', versions: { '1': { version: 'v1', boxes: {} } }, userId: '456' }
     // { appId: '123', title: 'demo', versions: { '1': { version: 'v1', boxes: {} } }, userId: '456' }
   ]);
+  const { user } = useAuth();
+  console.log(user.token);
+
+  useEffect(() => {
+    const fetchAllApps = async () => {
+      try {
+        let config = {
+          method: 'get',
+          maxBodyLength: Infinity,
+          url: 'http://localhost:3000/apps',
+          headers: {
+            "cookie":
+              `tj_auth_token=${user?.token}`
+          },
+          withCredentials: true
+        };
+
+        axios
+          .request(config)
+          .then((response) => {
+            console.log(JSON.stringify(response.data));
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        // setApps(response.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchAllApps();
+  }, []);
 
   useEffect(() => {
     dispatch(coreActions.changeTitle('All Apps'));
   }, []);
+
+  const handleCreateApp = async () => {
+    try {
+      const res = await axios.post(
+        'http://localhost:3000/apps',
+        { name: appName },
+        {
+          headers: {
+            Authorization: user.token
+          }
+        }
+      );
+      console.log(res);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const { Content } = Layout;
 
@@ -33,10 +86,21 @@ const Dashboard = () => {
       <Content>
         <Flex className="h-full " vertical flex={4}>
           <Flex flex={1} justify="center" className="p-10">
-            <Button type="primary" size="large" className="mr-4 flex items-center">
+            <Button
+              type="primary"
+              size="large"
+              className="mr-4 flex items-center"
+              onClick={() => setIsOpen((prev) => !prev)}
+            >
               <IoMdAdd className="text-xl mr-1" />
               Create App
             </Button>
+            {isOpen && (
+              <div>
+                <Input placeholder="Enter app name" onChange={(e) => setAppName(e.target.value)} />
+                <Button onClick={handleCreateApp}>Create</Button>
+              </div>
+            )}
             <Input.Search
               placeholder="search apps"
               allowClear

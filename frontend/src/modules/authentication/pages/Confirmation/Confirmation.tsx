@@ -2,16 +2,39 @@ import React from 'react';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Flex, Form, Input, Typography } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+import { login } from '../../reducers';
+
+import axios from 'axios';
+import { useAppDispatch } from '../../shared/hooks/useAppDispatch';
 
 const { Title } = Typography;
 
 const Confirmation: React.FC = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
+  const { invitationId } = useParams();
+  const dispatch = useAppDispatch()
+  console.log("invitation id: ", invitationId);
 
-  function handleRedirect() {
+
+  const handleRedirect = async (values: any) => {
     //form submit
-    navigate('/app');
+    console.log(values);
+    const data = {
+      "companyName": values.companyName,
+      "companySize": values.companySize,
+      "phoneNumber": values.phoneNumber,
+      "token": invitationId
+    }
+    try{ 
+      const res = await axios.post("http://localhost:3000/setup-account-from-token", data);
+      console.log(res);
+      dispatch(login()).unwrap().then(() => navigate(`/app?id=${res.id}`));
+  
+    } catch(e){
+      console.log(e);
+    }
   }
 
   return (
@@ -31,20 +54,20 @@ const Confirmation: React.FC = () => {
           </Paragraph> */}
         </Flex>
         <div className="w-full max-w-xs">
-          <Form layout="vertical" form={form} className="w-full">
+          <Form layout="vertical" form={form} className="w-full" onFinish={handleRedirect}>
             <Form.Item
-              name="CompanyName"
+              name="companyName"
               label="Company Name"
               rules={[{ required: true, message: '' }]}
             >
               <Input prefix={<UserOutlined />} placeholder="Enter your full name"/>
             </Form.Item>
             <Form.Item
-              name="size"
+              name="companySize"
               label="Company Size"
               rules={[{ required: true, message: 'Enter your company size!' }]}
             >
-              <Input prefix={<UserOutlined />} placeholder="Enter your company size" type='number'/>
+              <Input prefix={<UserOutlined />} placeholder="Enter your company size"/>
             </Form.Item>
             <Form.Item
               name="phoneNumber"
@@ -55,8 +78,9 @@ const Confirmation: React.FC = () => {
             </Form.Item>
             <Form.Item>
               <Button
+              htmlType='submit'
                 type="primary"
-                onClick={handleRedirect}
+                // onClick={handleRedirect}
                 size="large"
                 className="w-full"
               >
