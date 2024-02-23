@@ -46,7 +46,6 @@ module.exports = {
         format: ['camelCase', 'PascalCase']
       }
     ],
- 
     '@typescript-eslint/no-inferrable-types': 0,
     '@typescript-eslint/typedef': ['error'],
     '@typescript-eslint/no-explicit-any': 'error',
@@ -55,7 +54,6 @@ module.exports = {
     '@typescript-eslint/ban-ts-comment': 'off',
     // Identifier length should grater than or equal to 3
     'id-length': ['error', { min: 3, properties: 'never' }],
- 
     //Maximum number of line in a file
     'max-lines': [
       'error',
@@ -65,14 +63,13 @@ module.exports = {
         skipComments: true
       }
     ],
- 
     //Max number of line in a function except react functional component
     'react-func/max-lines-per-function': [
       'error',
       {
         max: 75,
-        // skipBlankLines: true,
-        // skipComments: true
+        skipBlankLines: true,
+        skipComments: true
       }
     ]
   },

@@ -1,16 +1,32 @@
+import { RouteObject } from 'react-router-dom';
+
+import { ProtectedRoutes } from '../shared/components/protected-routes.component';
 import { RootError } from '../shared/components/route-error';
 import Login from './pages/Login/Login';
+import Signup from './pages/Signup/Signup';
+import Confirmation from './pages/Confirmation/Confirmation';
 
-export const AuthRoutes = [
+export const AuthRoutes: RouteObject[] = [
   {
-    path: 'login',
-    element: <Login />,
-    errorElement: <RootError />
-    //     children: [
-    //       { index: true, element: <Navigate to="/login" replace /> },
-    //       { path: 'login', lazy: () => import('./login') },
-    //       { path: 'privacy', lazy: () => import('./privacy') },
-    //       { path: 'terms', lazy: () => import('./terms') }
-    //     ]
+    path: 'auth',
+    element: <ProtectedRoutes />,
+    errorElement: <RootError />,
+    children: [
+      {
+        path: 'login',
+        element: <Login />,
+        errorElement: <RootError />
+      },
+      {
+        path: 'signup',
+        element: <Signup />,
+        errorElement: <RootError />
+      },
+      {
+        path: 'invitations/:invitationId',
+        element: <Confirmation />,
+        errorElement: <RootError />
+      }
+    ]
   }
 ];

@@ -1,9 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState, memo } from 'react';
 import { useDrag } from 'react-dnd';
-import { DraggableData, Position, ResizableDelta, Rnd } from 'react-rnd';
+import { Rnd } from 'react-rnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
-import { Direction } from '../../interfaces/editor.interface';
 import BoxComponent from './Box.component';
 import { RxButton, RxInput } from "react-icons/rx";
 import { IoTextOutline } from "react-icons/io5";
@@ -13,8 +12,8 @@ import { IoIosCheckbox } from "react-icons/io";
 import { IoIosRadioButtonOn } from "react-icons/io";
 import { FaToggleOn } from "react-icons/fa";
 import { BsTextareaResize } from "react-icons/bs";
-import { Box } from '../../interfaces/container.interface';
 import BoxOptions from './BoxOptions.component';
+import { DraggableBoxPropsType } from '../../interfaces/container.interface';
 
 const AllIcons = {
   "Button": RxButton,
@@ -28,28 +27,7 @@ const AllIcons = {
   "TextArea": BsTextareaResize
 }
 
-type Props = {
-  onDragStop: (e: any, componentId: any, direction: DraggableData) => void;
-  onResizeStop: (
-    id: any,
-    e: any,
-    direction: Direction,
-    ref: React.ElementRef<'div'>,
-    d: ResizableDelta,
-    position: Position
-  ) => void;
-  inCanvas: boolean;
-  canvasWidth: number;
-  key: number;
-  id: number;
-  component: any,
-  box: Box;
-  index?: any,
-  resizingStatusChanged: (status: boolean) => void;
-  draggingStatusChanged: (status: boolean) => void;
-};
-
-export const DraggableBox = memo<Props>(
+export const DraggableBox = memo<DraggableBoxPropsType>(
   ({
     onResizeStop,
     onDragStop,
@@ -60,7 +38,8 @@ export const DraggableBox = memo<Props>(
     component,
     box,
     resizingStatusChanged,
-    draggingStatusChanged
+    draggingStatusChanged,
+    deleteComponent
   }) => {
     const [isResizing, setResizing] = useState(false);
     const [isDragging2, setDragging] = useState(false);
@@ -105,13 +84,7 @@ export const DraggableBox = memo<Props>(
         {inCanvas ? (
             <Rnd
             key={key}
-              style={{
-                display: 'inline-block',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '0px',
-                position: 'absolute'
-              }}
+              className={`flex flex-col p-0 absolute border-borderColor border-[1px] border-solid`}
               maxWidth={canvasWidth}
               onDragStop={(e, direction) => {
                 setDragging(false);
@@ -135,12 +108,12 @@ export const DraggableBox = memo<Props>(
               }}
               size={{
                 width: box?.width,
-                height: box?.height
+                height: box?.height,
               }}
               bounds="parent"
             >
-              <div className="w-full h-full" ref={preview}>
-                <BoxOptions/>
+              <div className="w-full" ref={preview}>
+                <BoxOptions name={box.name} deleteComponent={deleteComponent} id={box.id}/>
                 <BoxComponent box={box}/>
               </div>
             </Rnd>

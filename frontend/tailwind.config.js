@@ -4,10 +4,11 @@ export default {
   theme: {
     extend: {
       colors: {
+        border: 'rgb(230, 232, 235)',
         primary: '#475569',
         secondary: '#E2E8F0',
         borderColor: '#CBD5E1'
-      },
+      }
     },
     screens: {
       // max-width

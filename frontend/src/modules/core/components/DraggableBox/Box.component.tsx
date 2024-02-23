@@ -1,16 +1,17 @@
-import ButtonElement from "../WidgetElements/ButtonElement.component";
-import TextInput from "../WidgetElements/TextInput.component";
-import Text from "../WidgetElements/Text.component";
-import NumberInput from "../WidgetElements/NumberInput.component";
-import PasswordInput from "../WidgetElements/PasswordInput.component";
-import Checkbox from "antd/es/checkbox/Checkbox";
-import RadioButton from "../WidgetElements/RadioButton.component";
-import ToggleSwitch from "../WidgetElements/ToggleSwitch.component";
-import TextAreaElement from "../WidgetElements/TextAreaElement.component";
-import { Box } from "../../interfaces/container.interface";
+import Checkbox from 'antd/es/checkbox/Checkbox';
+
+import { Box } from '../../interfaces/container.interface';
+import ButtonElement from '../Editor/WidgetElements/ButtonElement.component';
+import NumberInput from '../Editor/WidgetElements/NumberInput.component';
+import PasswordInput from '../Editor/WidgetElements/PasswordInput.component';
+import RadioButton from '../Editor/WidgetElements/RadioButton.component';
+import Text from '../Editor/WidgetElements/Text.component';
+import TextAreaElement from '../Editor/WidgetElements/TextAreaElement.component';
+import TextInput from '../Editor/WidgetElements/TextInput.component';
+import ToggleSwitch from '../Editor/WidgetElements/ToggleSwitch.component';
 
 const AllComponents = {
-  "Button": ButtonElement,
+  Button: ButtonElement,
   TextInput,
   Text,
   NumberInput,
@@ -18,15 +19,17 @@ const AllComponents = {
   Checkbox,
   RadioButton,
   ToggleSwitch,
-  "TextArea": TextAreaElement
-}
+  TextArea: TextAreaElement
+};
 
 const BoxComponent: React.FC<{ box: Box }> = ({ box }) => {
   const ComponentToRender = AllComponents[box.component];
 
   return (
-    <div className="real-box w-full h-full" ><ComponentToRender></ComponentToRender></div>
-  )
-}
+    <div className="w-full">
+      <ComponentToRender></ComponentToRender>
+    </div>
+  );
+};
 
 export default BoxComponent;

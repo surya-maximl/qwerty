@@ -21,5 +21,5 @@ export const AUTH_INITIAL_STATE: AuthState = {
       timezone: 'Asia/Kolkata'
     }
   },
-  loggedIn: true
+  loggedIn: localStorage.getItem('accessToken') ? true : false
 };

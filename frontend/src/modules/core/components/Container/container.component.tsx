@@ -1,21 +1,21 @@
-import React, { useCallback, useState, useRef, useEffect } from 'react';
-import { useDrop, DropTargetMonitor } from 'react-dnd';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { produce } from 'immer';
+import update from 'immutability-helper';
+import { cloneDeep } from 'lodash';
+import { DropTargetMonitor, useDrop } from 'react-dnd';
 import { Position, ResizableDelta } from 'react-rnd';
+import { v4 as uuidv4 } from 'uuid';
 
+import { Box, DraggableBoxPropsType } from '../../interfaces/container.interface';
 import { Direction, DraggableData } from '../../interfaces/editor.interface';
 import { DraggableBox } from '../DraggableBox/dragglebox.component';
-import { v4 as uuidv4 } from 'uuid';
-import { componentTypes } from '../WidgetManager/widgetsComponents';
-import { cloneDeep } from 'lodash';
-import update  from "immutability-helper"
-import { DraggableBoxPropsType, Box } from '../../interfaces/container.interface';
+import { componentTypes } from '../Editor/WidgetManager/widgetsComponents';
 
 const NO_OF_GRIDS = 43;
 
 const Container: React.FC<{ canvasWidth: number }> = ({ canvasWidth }) => {
   const [boxes, setBoxes] = useState<{ [id: string]: Box }>({});
-  useEffect(() => console.log(boxes), [boxes])
+  useEffect(() => console.log(boxes), [boxes]);
   const canvasRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
@@ -48,13 +48,13 @@ const Container: React.FC<{ canvasWidth: number }> = ({ canvasWidth }) => {
 
   const onDragStop = useCallback(
     (e: any, componentId: number, direction: DraggableData) => {
-        console.log("On Drag Stop called")
+      console.log('On Drag Stop called');
       // Get the width of the canvas
       const canvasBounds = document
         .getElementsByClassName('real-canvas')[0]
         .getBoundingClientRect();
       const canvasWidth = canvasBounds?.width;
-      console.log("from drag stop:", canvasWidth);
+      console.log('from drag stop:', canvasWidth);
       const nodeBounds = direction.node.getBoundingClientRect();
 
       // Computing the left offset
@@ -108,11 +108,15 @@ const Container: React.FC<{ canvasWidth: number }> = ({ canvasWidth }) => {
         height: boxHeight
       } = boxes[id] || defaultData;
 
-      const boundingRect = document.getElementsByClassName('real-canvas')[0].getBoundingClientRect();
+      const boundingRect = document
+        .getElementsByClassName('real-canvas')[0]
+        .getBoundingClientRect();
       const canvasWidth = boundingRect?.width;
       let newWidth = boxWidth + deltaWidth;
 
       boxHeight = boxHeight + deltaHeight;
+      if(boxHeight < boxes[id].defaultSize.height) boxHeight = boxes[id].defaultSize.height;
+      if(newWidth < boxes[id].defaultSize.width) newWidth = boxes[id].defaultSize.width;
 
       boxTop = y;
       boxLeft = (x * 100) / canvasWidth;
@@ -121,12 +125,12 @@ const Container: React.FC<{ canvasWidth: number }> = ({ canvasWidth }) => {
         ...boxes,
         [id]: {
           ...boxes[id],
-            width: newWidth,
-            height: boxHeight,
-            left: boxLeft,
-            top: boxTop
-          }
-        };
+          width: newWidth,
+          height: boxHeight,
+          left: boxLeft,
+          top: boxTop
+        }
+      };
 
       setBoxes(newBoxes);
     },
@@ -140,7 +144,6 @@ const Container: React.FC<{ canvasWidth: number }> = ({ canvasWidth }) => {
     let found = false;
     let componentName = '';
     let currentNumber = currentComponentsForKind.length + 1;
-  
     while (!found) {
       componentName = `${componentType.toLowerCase()}${currentNumber}`;
       if (
@@ -150,7 +153,6 @@ const Container: React.FC<{ canvasWidth: number }> = ({ canvasWidth }) => {
       }
       currentNumber = currentNumber + 1;
     }
-  
     return componentName;
   }
 
@@ -162,25 +164,24 @@ const Container: React.FC<{ canvasWidth: number }> = ({ canvasWidth }) => {
   ) => {
     const componentMetaData = cloneDeep(componentMeta);
     const componentData = cloneDeep(componentMetaData);
-  
+
     const defaultWidth = componentMetaData.defaultSize.width;
-    const defaultHeight = componentMetaData.defaultSize.height;
-  
+    const defaultHeight = componentMetaData.defaultSize.height + 30;
+    componentData.defaultSize.height = defaultHeight;
+
     componentData.name = computeComponentName(componentData.component, currentComponents);
-  
+
     let left = 0;
     let top = 0;
-  
+
     const offsetFromTopOfWindow = canvasBoundingRect.top;
     const offsetFromLeftOfWindow = canvasBoundingRect.left;
     const currentOffset = eventMonitorObject.getSourceClientOffset();
     const subContainerWidth = canvasBoundingRect.width;
-  
+
     left = Math.round(currentOffset?.x - offsetFromLeftOfWindow);
-    top = Math.round(
-      currentOffset?.y - offsetFromTopOfWindow
-    );
-  
+    top = Math.round(currentOffset?.y - offsetFromTopOfWindow);
+
     left = (left * 100) / subContainerWidth;
     let newComponent = {
       id: uuidv4(),
@@ -189,8 +190,8 @@ const Container: React.FC<{ canvasWidth: number }> = ({ canvasWidth }) => {
       width: defaultWidth,
       height: defaultHeight,
       ...componentData
-    }
-  
+    };
+
     return newComponent;
   };
 
@@ -199,8 +200,8 @@ const Container: React.FC<{ canvasWidth: number }> = ({ canvasWidth }) => {
       setBoxes(
         update(boxes, {
           [id]: {
-            $merge: { ...layouts },
-          },
+            $merge: { ...layouts }
+          }
         })
       );
     },
@@ -211,9 +212,12 @@ const Container: React.FC<{ canvasWidth: number }> = ({ canvasWidth }) => {
     () => ({
       accept: ['box'],
       async drop(item: any, monitor: DropTargetMonitor) {
-        const canvasBoundingRect = document.getElementsByClassName('real-canvas')[0].getBoundingClientRect();
-        const componentMeta = cloneDeep(componentTypes.find((component) => component.component === item.component.component));
-        console.log("componentMeta", componentMeta)
+        const canvasBoundingRect = document
+          .getElementsByClassName('real-canvas')[0]
+          .getBoundingClientRect();
+        const componentMeta = cloneDeep(
+          componentTypes.find((component) => component.component === item.component.component)
+        );
 
         const newComponent = addNewWidgetToTheEditor(
           componentMeta,
@@ -226,46 +230,53 @@ const Container: React.FC<{ canvasWidth: number }> = ({ canvasWidth }) => {
           ...boxes,
           [newComponent.id]: {
             ...newComponent
-          },
+          }
         };
 
         setBoxes(newBoxes);
         return undefined;
-      },
+      }
     }),
     [moveBox]
   );
 
+  function deleteComponent(id: string) {
+    setBoxes(update(boxes, {
+      $unset: [id],
+    }));
+  }
+
   return (
     <>
-    <div 
-    id="real-canvas"
-      className="flex items-center real-canvas relative h-full w-full bg-secondary"
-      ref={(el) => {
-        canvasRef.current = el;
-        drop(el);
-      }}
+      <div
+        id="real-canvas"
+        className="flex items-center real-canvas relative h-full w-full bg-secondary"
+        ref={(el) => {
+          canvasRef.current = el;
+          drop(el);
+        }}
       >
-      {Object.keys(boxes).map((key) => {
-        const box = boxes[key];
-        const DraggableBoxProps: DraggableBoxPropsType = {
-          onDragStop,
-          onResizeStop,
-          inCanvas: true,
-          canvasWidth,
-          id: box.id,
-          box,
-          resizingStatusChanged,
-          draggingStatusChanged
-        };
-        return <DraggableBox {...DraggableBoxProps} />;
-      })}
-      {Object.keys(boxes).length === 0 && !isDragging && (
+        {Object.keys(boxes).map((key) => {
+          const box = boxes[key];
+          const DraggableBoxProps: DraggableBoxPropsType = {
+            onDragStop,
+            onResizeStop,
+            inCanvas: true,
+            canvasWidth,
+            id: box.id,
+            box,
+            resizingStatusChanged,
+            draggingStatusChanged,
+            deleteComponent
+          };
+          return <DraggableBox {...DraggableBoxProps} />;
+        })}
+        {Object.keys(boxes).length === 0 && !isDragging && (
           <div className="flex items-center justify-center mx-auto p-5 border-1 border-solid h-1/3">
             You haven&apos;t added any components yet. Drag components from the right sidebar and
             drop here.
           </div>
-      )}
+        )}
       </div>
     </>
   );

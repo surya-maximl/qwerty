@@ -5,37 +5,13 @@ import { AuthRoutes } from './modules/authentication/auth.routes';
 import { CoreRoutes } from './modules/core/core.routes';
 import appUrlConfigurator from './modules/core/utils/appUrlResolverHelper';
 
-// const router = createBrowserRouter([
-//   {
-//     path: '',
-//     element: <CoreRouter />,
-//     errorElement: <RootError />
-//     children: [
-//       { index: true, element: <Navigate to="/dashboard" replace /> },
-//       { path: 'dashboard', lazy: () => import('./dashboard') },
-//       { path: 'tasks', lazy: () => import('./tasks') },
-//       { path: 'messages', lazy: () => import('./messages') }
-//     ]
-//   }
-//     {
-//       path: '',
-//       element: <BaseLayout />,̥
-//       errorElement: <RootError />,
-//       children: [
-//         { index: true, element: <Navigate to="/login" replace /> },
-//         { path: 'login', lazy: () => import('./login') },
-//         { path: 'privacy', lazy: () => import('./privacy') },
-//         { path: 'terms', lazy: () => import('./terms') }
-//       ]
-//     }
-// ]);
+appUrlConfigurator.setBaseHrefAndTenantCode();
+console.log('After Base Href Set ', appUrlConfigurator.getBaseHref());
 
 /**
  * Application routes
  * https://reactrouter.com/en/main/routers/create-browser-router
  */
-appUrlConfigurator.setBaseHrefAndTenantCode();
-console.log('After Base Href Set ', appUrlConfigurator.getBaseHref());
 const router = createBrowserRouter([...CoreRoutes, ...AuthRoutes], {
   basename: appUrlConfigurator.getBaseHref()
 });

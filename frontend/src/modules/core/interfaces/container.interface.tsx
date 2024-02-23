@@ -19,6 +19,10 @@ export type DraggableBoxPropsType = {
   box?: Box;
   resizingStatusChanged?: (status: boolean) => void;
   draggingStatusChanged?: (status: boolean) => void;
+<<<<<<< HEAD
+=======
+  deleteComponent?: (id: string) => void;
+>>>>>>> ba3e346a06dbf1e81db3abc6392c7e18609bb86f
 };
 
 export type Box = {

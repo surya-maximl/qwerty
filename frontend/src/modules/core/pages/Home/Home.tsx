@@ -1,34 +1,41 @@
-// import { useEffect } from 'react';
-import { useEffect } from 'react';
-import { Flex, Layout } from 'antd';
-// import axios from 'axios';
-import { Outlet } from 'react-router-dom';
+import React from 'react';
+import { Button, Flex, Layout, Typography } from 'antd';
+import { useNavigate } from 'react-router-dom';
 
-import AppHeader from '../../components/Header/Header';
-import LeftPane from '../../components/LeftPane/LeftPane';
-import appUrlConfigurator from '../../utils/appUrlResolverHelper';
+import hero from '../../../../assets/hero.png';
+import LandingPageHeader from '../../components/LandingPage/LandingPageHeader.component';
 
-const { Content } = Layout;
 const Home: React.FC = () => {
-  // useEffect(() => {
-  //   const accessToken: string = localStorage.getItem('accessToken') ?? '';
-  //   if (!accessToken?.length) {
-  //     window.location.replace(
-  //       `${appUrlConfigurator.getAuthUrl()}/login?tenantCode=${appUrlConfigurator.getTenantCode()}`
-  //     );
-  //   }
-  // }, []);
+  const navigate = useNavigate();
+
+  function navigateToAppPage() {
+    navigate('/app');
+  }
+
+  const { Content } = Layout;
+  const { Title, Paragraph } = Typography;
+
   return (
-    <Flex className="h-screen w-screen">
-      <Layout>
-        {/* <LeftPane items={[]} /> */}
-        <Layout className="bg-slate-100">
-          <AppHeader />
-          <Content className="bg-white">
-            <Outlet />
-          </Content>
-        </Layout>
-      </Layout>
+    <Flex className="min-h-screen flex-col relative overflow-hidden bg-blue-200">
+      <LandingPageHeader />
+      <Content>
+        <Flex vertical className="w-full p-4 py-16" align="center">
+          <Flex vertical align="center" className="w-full max-w-xl text-center">
+            <Title className="!font-extrabold !text-5xl">
+              Rapid internal tool development platform
+            </Title>
+            <Paragraph className="leading-7 font-normal tracking-wide">
+              Create custom internal tools quickly and easily, with less code and fewer resources.
+              Boost productivity, cut costs, and deploy your tools faster, all while ensuring
+              enterprise-grade security.
+            </Paragraph>
+            <Button size="large" type="primary" onClick={navigateToAppPage}>
+              Get Started
+            </Button>
+          </Flex>
+          <img src={hero} className="object-contain w-3/4 rounded-xl absolute -bottom-64" />
+        </Flex>
+      </Content>
     </Flex>
   );
 };
