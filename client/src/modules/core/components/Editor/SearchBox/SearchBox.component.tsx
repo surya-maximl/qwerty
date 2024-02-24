@@ -7,16 +7,13 @@ import useMounted from '../../../../shared/hooks/useMount';
 import { Props } from './SearchBoxProps.type';
 
 export const SearchBox: React.FC<Props> = ({
-  width = 200,
   onSubmit,
   debounceDelay = 300,
-  darkMode = false,
   placeholder = 'Search',
   customClass = '',
   callBack,
   onClearCallback,
   autoFocus = false,
-  showClearButton,
   initialValue = ''
 }) => {
   const [searchText, setSearchText] = useState('');

@@ -1,4 +1,5 @@
 import { type AuthState } from '../interfaces';
+import { getCookie } from '../../core/utils/authUtils';
 
 export const AUTH_INITIAL_STATE: AuthState = {
   user: {
@@ -22,5 +23,5 @@ export const AUTH_INITIAL_STATE: AuthState = {
     //   timezone: 'Asia/Kolkata'
     // }
   },
-  loggedIn: localStorage.getItem('accessToken') ? true : false
+  loggedIn: getCookie("accessToken") ? true : false
 };
