@@ -23,11 +23,9 @@ const Login: React.FC = () => {
     try {
       const res = await axios.post("http://localhost:3000/auth/signin", data, {
         headers: {
-          // 'Authorization' : 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSGFyc2ggR3VwdGEiLCJpZCI6ImY3ZTYxYzE1LTU0NDktNDc1YS1iZjY4LTM2OGI3ZmVkNTM2YSIsImlhdCI6MTcwODY2MDkyOSwiZXhwIjoxNzA5MDIwOTI5fQ.N2gi4yZw1Xn-bMq6nvHN8KCKB7y3xa5dRHAVqzzhSic',
           'Content-Type': 'application/json'
         }
       });
-      console.log(res.data.id);
       dispatch(login(res.data));
       navigate(`/app/${res.data.id}`)
     } catch (err) {

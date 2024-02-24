@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Button, Dropdown, Flex, Image, Input, Layout, Typography } from 'antd';
 import axios from 'axios';
-import { BsSunFill } from 'react-icons/bs';
 import { FaRegEdit } from 'react-icons/fa';
 import { IoMdAdd } from 'react-icons/io';
 import { TbDotsVertical } from 'react-icons/tb';
@@ -9,165 +8,148 @@ import { useNavigate } from 'react-router-dom';
 
 import dashboardImage from '../../../../assets/dashboard.svg';
 import LeftPanel from '../../components/Editor/LeftPanel.component';
+import Modal from '../../components/Modal/Modal.component';
+import RenderIcon from '../../components/RenderIcon/RenderIcon.component';
 import { items } from '../../constants/dashboard.constants';
 import { appType } from '../../interfaces/dashboard.interface';
-import Modal from "../../components/Modal/Modal.component"
-
-
+import { getCookie } from '../../utils/authUtils';
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [edit, setEdit] = useState(false);
-  const [newAppName, setNewAppName] = useState("");
+  const [open, setOpen] = useState(false);
+  const [newAppName, setNewAppName] = useState('');
   const [apps, setApps] = useState<appType[]>([]);
   const [clickedId, setClickedId] = useState();
   const [refresh, setRefresh] = useState(false);
-  const [createApp, setCreateApp] = useState(false);
-  const token = localStorage.getItem('accessToken');
+  const [method, setMethod] = useState('');
+  const [token, setToken] = useState('');
 
   const handleCreateApp = async () => {
+    const data = {
+      name: newAppName
+    };
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
+    };
+    try {
+      const res = await axios.post('http://localhost:3000/apps', data, { headers });
+      setNewAppName('');
+      setRefresh((prev) => !prev);
+      setOpen(false);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const fetchAllApps = async () => {
     let config = {
-      method: 'post',
+      method: 'get',
       maxBodyLength: Infinity,
       url: 'http://localhost:3000/apps',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`
-      },
-      data: { name: newAppName }
+      }
     };
-    setEdit(false);
-    setNewAppName("");
-    axios
-      .request(config)
-      .then((response) => {
-        setRefresh(prev => !prev);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-};
+
+    try {
+      const res = await axios.request(config);
+      setApps(res.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
-    const fetchAllApps = async () => {
-        let config = {
-          method: 'get',
-          maxBodyLength: Infinity,
-          url: 'http://localhost:3000/apps',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          }
-        };
+    setToken(getCookie('accessToken'));
+  }, []);
 
-        try {
-          const res = await axios.request(config);
-          setApps(res.data);
-        } catch (error) {
-          console.error(error);
-        }
-      }
+  useEffect(() => {
     fetchAllApps();
-  }, [refresh]);
+  }, [refresh, token]);
 
   const renameApp = async (id: string) => {
     let data = { name: newAppName };
-
-    let config = {
-      method: 'patch',
-      maxBodyLength: Infinity,
-      url: `http://localhost:3000/apps/${id}`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization:
-          'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSGFyc2ggR3VwdGEiLCJpZCI6IjdhNWFmOGUxLTBjZjktNGQzMi05NTM0LWE2ZDg1ZjFjZDIxOSIsImlhdCI6MTcwODYzMDg3MiwiZXhwIjoxNzA4OTkwODcyfQ.Q4WRVzsw1b67pBq-JMJ-0ErCWo09M0UYFS8ID_OAvBc'
-      },
-      data: data
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
     };
 
-    setEdit(false);
-    setNewAppName("");
-    axios
-      .request(config)
-      .then((response) => {
-        console.log(JSON.stringify(response.data));
-        setRefresh(prev => !prev)
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    setOpen(false);
+    setNewAppName('');
+    try {
+      const res = await axios.patch(`http://localhost:3000/apps/${id}`, data, { headers });
+      setRefresh((prev) => !prev);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
-  const changeIcon = (id: string) => {
+  const changeIcon = async (id: string) => {
     let data = {
-      icon: "icon2",
+      icon: newAppName,
       id
     };
-
-    let config = {
-      method: 'put',
-      maxBodyLength: Infinity,
-      url: `http://localhost:3000/apps/icon`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization:
-          'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSGFyc2ggR3VwdGEiLCJpZCI6IjdhNWFmOGUxLTBjZjktNGQzMi05NTM0LWE2ZDg1ZjFjZDIxOSIsImlhdCI6MTcwODYzMDg3MiwiZXhwIjoxNzA4OTkwODcyfQ.Q4WRVzsw1b67pBq-JMJ-0ErCWo09M0UYFS8ID_OAvBc'
-      },
-      data: data
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
     };
+    setOpen(false);
 
-    axios
-      .request(config)
-      .then((response) => {
-        console.log(JSON.stringify(response.data));
-        setRefresh(prev => !prev)
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
+    try {
+      const res = await axios.put('http://localhost:3000/apps/icon', data, { headers });
+      setRefresh((prev) => !prev);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const deleteApp = async (id: string) => {
-    let config = {
-      method: 'delete',
-      maxBodyLength: Infinity,
-      url: `http://localhost:3000/apps/${id}`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization:
-          `Bearer ${token}`
-      }
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
     };
 
-    axios
-      .request(config)
-      .then((response) => {
-        console.log(JSON.stringify(response.data));
-        setRefresh(prev => !prev)
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    try {
+      const res = await axios.delete(`http://localhost:3000/apps/${id}`, { headers });
+      setRefresh((prev) => !prev);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleAppEvents = (method: string, id: string) => {
+    setMethod(method);
+    setClickedId(id);
+    setOpen(true);
   }
-
   const handleDropdownClick = (e, id) => {
-    if(e.key==='1') {
-      setCreateApp(false);
-      setClickedId(id)
-      setEdit(true);
-    } else if(e.key==='2') {
-
-    } else if(e.key==='3') {
+    if (e.key === '1') {
+      handleAppEvents('renameApp', id);
+    } else if (e.key === '2') {
+      handleAppEvents('changeIcon', id);
+    } else if (e.key === '3') {
       deleteApp(id);
     }
-  }
+  };
 
   const { Content } = Layout;
 
   return (
     <Layout className="min-h-screen">
       <LeftPanel />
-      <Modal renameApp={renameApp} handleCreateApp={handleCreateApp} setNewAppName={setNewAppName} open={edit} setOpen={setEdit} id={clickedId} createApp={createApp}/>
+      <Modal
+        renameApp={renameApp}
+        handleCreateApp={handleCreateApp}
+        changeIcon={changeIcon}
+        setNewAppName={setNewAppName}
+        newAppName={newAppName}
+        open={open}
+        setOpen={setOpen}
+        id={clickedId}
+        method={method}
+      />
       <Content>
         <Flex className="h-full " vertical flex={4}>
           <Flex flex={1} justify="center" className="p-10">
@@ -176,8 +158,9 @@ const Dashboard = () => {
               size="large"
               className="mr-4 flex items-center"
               onClick={() => {
-                setCreateApp(true);
-                setEdit(true)}}
+                setMethod('createApp');
+                setOpen(true);
+              }}
             >
               <IoMdAdd className="text-xl mr-1" />
               Create App
@@ -221,17 +204,19 @@ const Dashboard = () => {
                     className="border-solid border-[1px] border-borderColor h-fit w-[22%] p-4 rounded-lg"
                   >
                     <Flex justify="space-between">
-                      <Flex className="w-fit p-2.5 rounded-md bg-secondary mb-4" onClick={() => changeIcon(item?.id)}>
-                        <BsSunFill className="text-3xl text-primary" />
+                      <Flex className="w-fit p-2.5 rounded-md bg-secondary mb-4">
+                        <RenderIcon name={item.icon} />
                       </Flex>
-                      <Dropdown menu={{ onClick: (e) => handleDropdownClick(e, item?.id), items }} placement="bottomLeft" arrow trigger={['click']}>
+                      <Dropdown
+                        menu={{ onClick: (e) => handleDropdownClick(e, item?.id), items }}
+                        placement="bottomLeft"
+                        arrow
+                        trigger={['click']}
+                      >
                         <TbDotsVertical className="text-xl text-primary cursor-pointer" />
                       </Dropdown>
-                      
                     </Flex>
-                    <Typography.Text
-                      className="text-lg font-semibold"
-                    >
+                    <Typography.Text className="text-lg font-semibold">
                       {item?.name}
                     </Typography.Text>
                     <Button
