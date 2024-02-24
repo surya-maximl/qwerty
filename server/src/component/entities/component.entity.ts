@@ -16,6 +16,9 @@ export class ComponentEntity {
   id: string;
 
   @Column()
+  appId: string;
+
+  @Column()
   userId: string;
 
   @Column({ type: 'double precision', nullable: true })
