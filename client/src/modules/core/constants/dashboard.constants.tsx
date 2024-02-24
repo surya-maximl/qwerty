@@ -9,7 +9,7 @@ import { PiCirclesFourFill, PiRobotFill } from 'react-icons/pi';
 import { RiAppsFill } from 'react-icons/ri';
 
 
-export const items: itemType[] = [
+export const appEvents: itemType[] = [
   {
     key: '1',
     label: (<Typography>Rename app</Typography>),
@@ -62,3 +62,4 @@ export const appIcons = [
     icon: <PiRobotFill />
   }
 ];
+

@@ -5,12 +5,12 @@ import update from 'immutability-helper';
 import { cloneDeep } from 'lodash';
 import { DropTargetMonitor, useDrop } from 'react-dnd';
 import { Position, ResizableDelta } from 'react-rnd';
-import { v4 as uuidv4 } from 'uuid';
 
 import { Box, DraggableBoxPropsType } from '../../interfaces/container.interface';
 import { Direction, DraggableData } from '../../interfaces/editor.interface';
 import { DraggableBox } from '../DraggableBox/dragglebox.component';
 import { componentTypes } from '../Editor/WidgetManager/widgetsComponents';
+import { getCookie } from '../../utils/authUtils';
 
 const NO_OF_GRIDS = 43;
 
@@ -23,6 +23,7 @@ const Container: React.FC<{ canvasWidth: number }> = ({ canvasWidth }) => {
   const gridWidth = Number(canvasWidth) / NO_OF_GRIDS;
 
   useEffect(() => {
+    const token = getCookie("accessToken");
     let config = {
       method: 'get',
       maxBodyLength: Infinity,
@@ -30,7 +31,7 @@ const Container: React.FC<{ canvasWidth: number }> = ({ canvasWidth }) => {
       headers: {
         'Content-Type': 'application/json',
         Authorization:
-          'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSGFyc2ggR3VwdGEiLCJpZCI6IjdhNWFmOGUxLTBjZjktNGQzMi05NTM0LWE2ZDg1ZjFjZDIxOSIsImlhdCI6MTcwODYzMDg3MiwiZXhwIjoxNzA4OTkwODcyfQ.Q4WRVzsw1b67pBq-JMJ-0ErCWo09M0UYFS8ID_OAvBc'
+          `Bearer ${token}`
       }
     };
 
