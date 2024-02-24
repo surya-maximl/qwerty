@@ -1,9 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
-
 import { AUTH_INITIAL_STATE } from '../constants';
 import { RootState } from '../shared/state';
-
-
+import { setCookie, unsetCookie } from '../../core/utils/authUtils';
 import { type AuthState } from '../interfaces';
 
 const authSlice = createSlice({
@@ -14,11 +12,11 @@ const authSlice = createSlice({
     login: (state: AuthState, action: any) => {
       state.loggedIn = true;
       state.user = action.payload;
-      localStorage.setItem('accessToken', action.payload.token);
+      setCookie('accessToken', action.payload.token);
     },
     logout: (state: AuthState) => {
       state.loggedIn = false;
-      localStorage.removeItem('accessToken');
+      unsetCookie('accessToken');
     },
     setUser: (state: AuthState, action: any) => {
       state.user = action.payload;
