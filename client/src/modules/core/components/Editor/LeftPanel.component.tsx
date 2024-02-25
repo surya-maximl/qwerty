@@ -1,6 +1,8 @@
-import { SyntheticEvent } from 'react';
-import { Avatar, Dropdown, Flex, Layout } from 'antd';
+import { Flex, Layout } from 'antd';
 import { useAuth } from '../../../shared/hooks/useAuth';
+import { Link } from 'react-router-dom';
+import { HomeOutlined } from '@ant-design/icons';
+import { MenuProps } from 'antd';
 
 const { Sider } = Layout;
 

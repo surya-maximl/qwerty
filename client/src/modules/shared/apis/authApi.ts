@@ -13,6 +13,12 @@ type signupForm = {
   phone: string;
 };
 
+type invitationForm = {
+  companyName: string;
+  phoneNumber: string;
+  token: string;
+};
+
 export const authApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
     login: build.mutation<User, loginForm>({
@@ -34,8 +40,18 @@ export const authApi = baseApi.injectEndpoints({
         };
       },
       invalidatesTags: ['User']
+    }),
+    handleInvitation: build.mutation<User, invitationForm>({
+      query: (invitationDetails) => {
+        return {
+          url: 'auth/setup-account-from-token',
+          method: 'POST',
+          body: invitationDetails
+        };
+      },
+      invalidatesTags: ['User']
     })
   })
 });
 
-export const { useLoginMutation, useSignupMutation } = authApi;
+export const { useLoginMutation, useSignupMutation, useHandleInvitationMutation } = authApi;

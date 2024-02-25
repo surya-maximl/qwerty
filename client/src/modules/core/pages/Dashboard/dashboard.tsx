@@ -5,6 +5,8 @@ import Fuse from 'fuse.js';
 import { IoMdAdd } from 'react-icons/io';
 import { MdDelete, MdDriveFileRenameOutline, MdOutlineChangeCircle } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
+import { TbDotsVertical } from 'react-icons/tb';
+import { FaRegEdit } from 'react-icons/fa';
 
 import {
   useCreateAppMutation,
@@ -16,6 +18,8 @@ import LeftPanel from '../../components/Editor/LeftPanel.component';
 import Modal from '../../components/Modal/Modal.component';
 import RenderIcon from '../../components/RenderIcon/RenderIcon.component';
 import { items } from '../../constants/dashboard.constants';
+import UserInfoModal from '../../components/Modal/UserInfoModal.component';
+import DashboardHeader from '../../components/Dashboard/DashboardHeader.component';
 
 const { Content } = Layout;
 const { Title, Paragraph } = Typography;

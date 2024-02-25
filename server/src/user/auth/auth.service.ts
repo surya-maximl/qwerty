@@ -61,14 +61,14 @@ export class AuthService {
   async signin({ email, password }: SigninDto) {
     const user = await this.user.findOne({ where: { email: email } })
     if (!user) throw new NotFoundException("User Not found");
-    let token = ""
+    let token = await jwt.sign({
+      name: user.name,
+      id: user.id
+    }, process.env.JWT_TOKEN, {
+      expiresIn: 360000
+    })
+
     if (!user.validated) {
-      token = await jwt.sign({
-        name: user.name,
-        id: user.id
-      }, process.env.JWT_TOKEN, {
-        expiresIn: 360000
-      });
       await this.emailService.sendWelcomeEmail(email, user.name, token);
       return {
         msg: "Setup Account",

@@ -10,7 +10,7 @@ const generateInviteURL = (
   const host = 'http://localhost:5173';
   const subpath = 'login';
 
-  return `${host}/invitations/${invitationToken}`
+  return `${host}/auth/invitations/${invitationToken}`
 };
 
 export class EmailService {

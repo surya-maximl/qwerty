@@ -23,7 +23,10 @@ export const appApi = baseApi.injectEndpoints({
       query: () => {
         return {
           url: 'apps',
-          method: 'GET'
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
         };
       },
       providesTags: ['Apps']
