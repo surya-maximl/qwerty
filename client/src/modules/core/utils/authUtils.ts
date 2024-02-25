@@ -17,6 +17,7 @@ export const getCookie = (name: string) => {
 export const setCookie = (name: string, value: string) => {
   const date = new Date();
   const decodedToken: any = jwtDecode(value);
+  console.log(decodedToken)
   date.setTime(date.getTime() + decodedToken.exp);
   const expires = "expires=" + date.toUTCString();
   document.cookie = name + "=" + value + ";" + expires + ";path=/";

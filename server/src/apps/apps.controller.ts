@@ -5,7 +5,7 @@ import { AppsService } from './apps.service';
 import { User } from 'src/user/decorators/user.decorator';
 import { AuthGuard } from 'src/guards/auth.guards';
 
-// @UseGuards(AuthGuard)
+@UseGuards(AuthGuard)
 @Controller('apps')
 export class AppsController {
 
@@ -15,14 +15,14 @@ export class AppsController {
   async createApp(@User() user: any, @Body() createApp: CreateAppDTO) {
     console.log(user);
     console.log(createApp);
-    const app = this.appsService.create(createApp, user.id);
+    const app = this.appsService.create(createApp, user?.id);
 
     return app;
   }
 
   @Get()
   async getAllApps(@User() user: any) {
-    const app = this.appsService.getAllApps(user.id)
+    const app = this.appsService.getAllApps(user?.id)
     return app;
   }
 

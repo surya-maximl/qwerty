@@ -10,11 +10,11 @@ const editorHeaaderStyle: React.CSSProperties = {
   padding: 0
 };
 
-const EditorHeader: React.FC = () => {
+const EditorHeader: React.FC = ({ name }) => {
   return (
     <Header style={editorHeaaderStyle}>
       <Flex align="center" className="h-full p-4">
-        <Text strong>Test App</Text>
+        <Text strong>{name}</Text>
       </Flex>
     </Header>
   );

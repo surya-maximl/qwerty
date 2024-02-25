@@ -3,22 +3,20 @@ import { Flex, Layout } from 'antd';
 import axios from 'axios';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-
-import { useAppDispatch } from '../../../shared/hooks/useAppDispatch';
 import Container from '../../components/Container/container.component';
 import EditorHeader from '../../components/Editor/EditorHeader.component';
 import LeftPanel from '../../components/Editor/LeftPanel.component';
 import QueryPanel from '../../components/Editor/QueryPanel.components';
 import RightPanel from '../../components/Editor/RightPanel.component';
 import { coreActions } from '../../reducers/core.reducer';
+import axios from 'axios';
+import { useParams } from 'react-router-dom';
+import { getCookie } from '../../utils/authUtils
 
 const Editor: React.FC = () => {
   const [canvasWidth, setCanvasWidth] = useState(0);
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    dispatch(coreActions.changeTitle('Editor'));
-  }, []);
+  const {id} = useParams();
+  const [app, setApp] = useState([]);
 
   useEffect(() => {
     setCanvasWidth(getCanvasWidth());
@@ -37,6 +35,24 @@ const Editor: React.FC = () => {
   const containerProps: { canvasWidth: number } = {
     canvasWidth: canvasWidth
   };
+  const token = getCookie('accessToken');
+  
+  const fetchApp = async () => {
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
+    }
+    try {
+      const res = await axios.get(`http://localhost:3000/apps/${id}`, { headers });
+      setApp(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  useEffect(() => {
+    fetchApp();
+  }, [])
 
   const { Content } = Layout;
 
@@ -46,13 +62,13 @@ const Editor: React.FC = () => {
         <DndProvider backend={HTML5Backend}>
           <LeftPanel showProfile />
           <Layout>
-            <EditorHeader />
+            <EditorHeader name={app.name}/>
             <Content>
               <Flex className="w-full h-full" id="real-canvas">
                 <Container {...containerProps} />
               </Flex>
             </Content>
-            <QueryPanel />
+            {/* <QueryPanel /> */}
           </Layout>
           <RightPanel />
         </DndProvider>

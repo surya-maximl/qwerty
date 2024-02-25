@@ -1,5 +1,6 @@
 import { getCookie } from '../../core/utils/authUtils';
 import { type AuthState } from '../interfaces';
+import { getCookie } from '../../core/utils/authUtils';
 
 export const AUTH_INITIAL_STATE: AuthState = {
   user: {

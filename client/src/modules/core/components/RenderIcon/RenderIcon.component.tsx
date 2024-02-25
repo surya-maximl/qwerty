@@ -1,12 +1,19 @@
-import { Flex } from 'antd';
+import { appIcons } from "../../constants/dashboard.constants";
+import { MdEmail } from "react-icons/md";
+import { Flex } from "antd";
 
-import { appIcons } from '../../constants/dashboard.constants';
+type Props = {
+  name: string
+}
 
-const RenderIcon = ({ name }) => {
-  let icon = appIcons.find((item) => item.name === name);
+const RenderIcon: React.FC<Props> = ({ name }) => {
+  let icon = appIcons.find(item => item.name === name);
   return (
-    <>
-      <Flex className="text-3xl text-primary">{icon?.icon}</Flex>
+    <>  
+      <Flex className="text-3xl text-primary">
+        {!name && <MdEmail/>}
+        {name && icon?.icon}
+      </Flex>
     </>
   );
 };
