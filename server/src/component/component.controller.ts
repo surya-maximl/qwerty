@@ -37,7 +37,7 @@ export class ComponentController {
   }
 
   @Delete(':appId/:id')
-  async deleteComponent(@Param('id') id: string, @Param('appId') appId: string,, @User() user: any) {
+  async deleteComponent(@Param('id') id: string, @Param('appId') appId: string, @User() user: any) {
     // return id;
     const component = await this.componentService.deleteComponent(id, appId, user?.id);
     return component;
