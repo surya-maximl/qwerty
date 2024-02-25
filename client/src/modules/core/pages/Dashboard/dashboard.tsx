@@ -1,39 +1,36 @@
 import { useEffect, useState } from 'react';
 import { App, Button, Card, Dropdown, Flex, Input, Layout, Skeleton, Typography } from 'antd';
-import axios from 'axios';
 import Fuse from 'fuse.js';
 import { IoMdAdd } from 'react-icons/io';
 import { MdDelete, MdDriveFileRenameOutline, MdOutlineChangeCircle } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
-import { TbDotsVertical } from 'react-icons/tb';
-import { FaRegEdit } from 'react-icons/fa';
 
 import {
+  useChangeIconMutation,
   useCreateAppMutation,
+  useDeleteAppMutation,
   useGetAllAppsQuery,
   useRenameAppMutation
 } from '../../../shared/apis/appApi';
-import { useAuth } from '../../../shared/hooks/useAuth';
+import AppCard from '../../components/AppCard/AppCard.component';
+import DashboardHeader from '../../components/Dashboard/DashboardHeader.component';
 import LeftPanel from '../../components/Editor/LeftPanel.component';
 import Modal from '../../components/Modal/Modal.component';
-import RenderIcon from '../../components/RenderIcon/RenderIcon.component';
-import { items } from '../../constants/dashboard.constants';
 import UserInfoModal from '../../components/Modal/UserInfoModal.component';
-import DashboardHeader from '../../components/Dashboard/DashboardHeader.component';
 
-const { Content } = Layout;
 const { Title, Paragraph } = Typography;
 
 const Dashboard = () => {
   const [open, setOpen] = useState(false);
   const [newAppName, setNewAppName] = useState('');
+  const [selectedApp, setSelectedApp] = useState('');
   const [clickedId, setClickedId] = useState();
-  const [refresh, setRefresh] = useState(false);
   const [method, setMethod] = useState('');
-  const [token, setToken] = useState('');
   const { message } = App.useApp();
-  const [createNewApp] = useCreateAppMutation();
-  const [renameAppMutation] = useRenameAppMutation();
+  const [createNewApp, { isLoading: isAppCreating }] = useCreateAppMutation();
+  const [renameAppMutation, { isLoading: isAppRenaming }] = useRenameAppMutation();
+  const [deleteAppMutation] = useDeleteAppMutation();
+  const [changeIconMutation, { isLoading: isIconLoading }] = useChangeIconMutation();
   const [filteredApps, setFilteredApps] = useState<appType[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [userInfoOpen, setUserInfoOpen] = useState(false);
@@ -41,55 +38,44 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   const handleCreateApp = async () => {
-    createNewApp(newAppName);
-    setNewAppName('');
-    setOpen(false);
+    createNewApp(newAppName)
+      .unwrap()
+      .then(() => {
+        setNewAppName('');
+        setOpen(false);
+      });
   };
-
-  const { user } = useAuth();
 
   const renameApp = (id: string) => {
     renameAppMutation({
       appId: id,
       appName: newAppName
-    });
-    setOpen(false);
-    setNewAppName('');
+    })
+      .unwrap()
+      .then(() => {
+        setNewAppName('');
+        setOpen(false);
+      });
   };
 
   const changeIcon = async (id: string) => {
-    let data = {
-      icon: newAppName,
-      id
-    };
-    const headers = {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`
-    };
-
-    try {
-      const res = await axios.put('http://localhost:3000/apps/icon', data, { headers });
-      setRefresh((prev) => !prev);
-      setOpen(false);
-      setSearchQuery('');
-    } catch (err) {
-      console.log(err);
-    }
+    setSelectedApp(id);
+    changeIconMutation({ icon: newAppName, id })
+      .unwrap()
+      .then(() => {
+        setSelectedApp('');
+        setNewAppName('');
+        setOpen(false);
+      });
   };
 
   const deleteApp = async (id: string) => {
-    const headers = {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`
-    };
-
-    try {
-      const res = await axios.delete(`http://localhost:3000/apps/${id}`, { headers });
-      setRefresh((prev) => !prev);
-      setSearchQuery('');
-    } catch (err) {
-      console.log(err);
-    }
+    setSelectedApp(id);
+    deleteAppMutation(id)
+      .unwrap()
+      .then(() => {
+        setSelectedApp('');
+      });
   };
 
   const handleAppEvents = (method: string, id: string) => {
@@ -99,7 +85,7 @@ const Dashboard = () => {
     setSearchQuery('');
     setOpen(true);
   };
-  
+
   const handleDropdownClick = (e: any, id: string) => {
     if (e.key === '1') {
       handleAppEvents('renameApp', id);
@@ -184,8 +170,11 @@ const Dashboard = () => {
 
   return (
     <Layout className="min-h-screen">
-      <UserInfoModal setOpen={setUserInfoOpen} open={userInfoOpen}/>
+      <UserInfoModal setOpen={setUserInfoOpen} open={userInfoOpen} />
       <Modal
+        isAppCreating={isAppCreating}
+        isAppRenaming={isAppRenaming}
+        isIconLoading={isIconLoading}
         renameApp={renameApp}
         handleCreateApp={handleCreateApp}
         changeIcon={changeIcon}
@@ -196,105 +185,84 @@ const Dashboard = () => {
         id={clickedId}
         method={method}
       />
-      <DashboardHeader setOpen={setUserInfoOpen} open={userInfoOpen}/>
-      <Content>
-        <Flex vertical className="h-full" gap="large">
-          <Flex justify="center" className="p-4 py-8 gap-4">
-            <Card className="border-border shadow-sm">
-              <Flex align="center" justify="center" gap="middle">
-                 <Button
-                  type="primary"
+      <LeftPanel />
+      <Layout>
+        <DashboardHeader setOpen={setUserInfoOpen} open={userInfoOpen} />
+        <Content>
+          <Flex vertical className="h-full" gap="large">
+            <Flex justify="center" className="p-4 py-8 gap-4">
+              <Button
+                type="primary"
+                size="large"
+                className="mr-4 flex items-center"
+                onClick={() => {
+                  setMethod('createApp');
+                  setOpen(true);
+                }}
+              >
+                <IoMdAdd className="text-xl mr-1" />
+                Create App
+              </Button>
+              <Dropdown menu={{ items }} open={searchQuery !== ''}>
+                <Input.Search
+                  placeholder="search apps"
+                  allowClear
+                  className="h-fit"
+                  style={{ width: '50%' }}
                   size="large"
-                  className="mr-4 flex items-center"
-                  onClick={() => {
-                    setMethod('createApp');
-                    setOpen(true);
-                  }}
-                >
-                  <IoMdAdd className="text-xl mr-1" />
-                  Create App
-                </Button>
-                <Dropdown menu={{ items }} open={searchQuery !== ''}>
-                  <Input.Search
-                    placeholder="search apps"
-                    allowClear
-                    className="h-fit"
-                    style={{ width: '50%' }}
-                    size="large"
-                    value={searchQuery}
-                    onChange={(e) => handleSearchQueryChange(e)}
-                  />
-                </Dropdown>
-              </Flex>
-            </Card>
-          </Flex>
+                  value={searchQuery}
+                  onChange={(e) => handleSearchQueryChange(e)}
+                />
+              </Dropdown>
+            </Flex>
 
-          <Flex vertical className="p-4 md:px-20 w-full">
-            {isLoading && isFetching ? (
-              <Flex className="w-full grid grid-cols-2 sm:grid-cols-4 gap-10">
-                <Skeleton.Button active className="!w-full !h-32" />
-                <Skeleton.Button active className="!w-full !h-32" />
-                <Skeleton.Button active className="!w-full !h-32" />
-                <Skeleton.Button active className="!w-full !h-32" />
-                <Skeleton.Button active className="!w-full !h-32" />
-              </Flex>
-            ) : apps.length === 0 ? (
-              <Card className="shadow-sm border-border py-10">
-                <Flex vertical align="center" justify="center" className="w-full">
-                  <Title className="!font-extrabold tracking-tight">
-                    Welcome to your new Workspace!
-                  </Title>
-                  <Paragraph className="text-xl text-secondary">
-                    You can get started by creating a new application
-                  </Paragraph>
-                  <Button type="primary" icon={<IoMdAdd />} className="mt-4">
-                    Create New App
-                  </Button>
+            <Flex vertical className="p-4 md:px-20 w-full">
+              {isLoading && isFetching ? (
+                <Flex className="w-full grid grid-cols-2 sm:grid-cols-4 gap-10">
+                  <Skeleton.Button active className="!w-full !h-32" />
+                  <Skeleton.Button active className="!w-full !h-32" />
+                  <Skeleton.Button active className="!w-full !h-32" />
+                  <Skeleton.Button active className="!w-full !h-32" />
+                  <Skeleton.Button active className="!w-full !h-32" />
                 </Flex>
-              </Card>
-            ) : (
-              <Flex className="w-full grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
-                {apps.map((item) => (
-                  <Card key={item?.id} className="border-border shadow-sm shrink-0">
-                    <Flex vertical className="gap-8">
-                      <Flex justify="space-between" align="center" className="w-full">
-                        <Flex className="h-6 w-6 rounded-md bg-secondary/40">
-                          {/* TODO: Some error in this component */}
-                          <RenderIcon name={item.icon} />
-                        </Flex>
-                        <Dropdown
-                          menu={{ onClick: (e) => handleDropdownClick(e, item?.id), items }}
-                          placement="bottomLeft"
-                          arrow
-                          trigger={['click']}
-                        >
-                          <Button
-                            icon={<TbDotsVertical className="text-lg mt-[1.5px] ml-[0.5px]" />}
-                          />
-                        </Dropdown>
-                      </Flex>
-                      <Flex justify="space-between" align="center">
-                        <Typography.Text className="text-lg font-semibold">
-                          {item?.name}
-                        </Typography.Text>
-                        <Button
-                          type="primary"
-                          className="px-6"
-                          icon={<FaRegEdit />}
-                          onClick={() => navigate(`/app/editor/${item?.id}`)}
-                        >
-                          Edit
-                        </Button>
-                      </Flex>
-                    </Flex>
-                  </Card>
-                ))}
-              </Flex>
-            )}
+              ) : apps.length === 0 ? (
+                <Card className="shadow-sm border-border py-10">
+                  <Flex vertical align="center" justify="center" className="w-full">
+                    <Title className="!font-extrabold tracking-tight">
+                      Welcome to your new Workspace!
+                    </Title>
+                    <Paragraph className="text-xl text-secondary">
+                      You can get started by creating a new application
+                    </Paragraph>
+                    <Button
+                      type="primary"
+                      icon={<IoMdAdd />}
+                      className="mt-4"
+                      onClick={() => {
+                        setMethod('createApp');
+                        setOpen(true);
+                      }}
+                    >
+                      Create New App
+                    </Button>
+                  </Flex>
+                </Card>
+              ) : (
+                <Flex className="w-full grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
+                  {apps.map((item) => (
+                    <AppCard
+                      key={item.id}
+                      item={item}
+                      handleDropdownClick={handleDropdownClick}
+                      selectedApp={selectedApp}
+                    />
+                  ))}
+                </Flex>
+              )}
+            </Flex>
           </Flex>
-        </Flex>
-      </Content>
-
+        </Content>
+      </Layout>
     </Layout>
   );
 };

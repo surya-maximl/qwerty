@@ -1,16 +1,21 @@
-import { Body, Controller, Get, Param, Patch, Post, UnauthorizedException, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UnauthorizedException,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SigninDto, SignupDto, UserInfoDto } from './dto/auth.dto';
 import { User } from '../decorators/user.decorator';
 import { AuthGuard } from 'src/guards/auth.guards';
 
-
-
-
 @Controller('auth')
 export class AuthController {
-
-  constructor(private readonly authService: AuthService) { }
+  constructor(private readonly authService: AuthService) {}
 
   @Post('/signup')
   async signup(@Body() body: SignupDto) {
@@ -24,7 +29,8 @@ export class AuthController {
 
   @Get()
   whoAmI(@User() user) {
-    return user;
+    const userDetails = this.authService.userDetails(user);
+    return userDetails;
   }
 
   @Post('setup-account-from-token')
@@ -34,17 +40,16 @@ export class AuthController {
   }
 
   @UseGuards(AuthGuard)
-  @Patch("update-user-info")
+  @Patch('update-user-info')
   async updateInfo(@User() user: any, @Body() body: UserInfoDto) {
     const updatedInfo = await this.authService.updateUserInfo(user.id, body);
     return updatedInfo;
   }
 
   @UseGuards(AuthGuard)
-  @Get("update-user-info")
+  @Get('update-user-info')
   async getUserInfo(@User() user: any) {
     const userInfo = await this.authService.getUserInfo(user.id);
     return userInfo;
   }
-
 }

@@ -6,9 +6,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import Container from '../../components/Container/container.component';
 import EditorHeader from '../../components/Editor/EditorHeader.component';
 import LeftPanel from '../../components/Editor/LeftPanel.component';
-import QueryPanel from '../../components/Editor/QueryPanel.components';
 import RightPanel from '../../components/Editor/RightPanel.component';
-import { coreActions } from '../../reducers/core.reducer';
 import { useParams } from 'react-router-dom';
 import { getCookie } from '../../utils/authUtils';
 

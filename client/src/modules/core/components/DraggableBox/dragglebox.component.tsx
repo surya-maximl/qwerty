@@ -84,7 +84,7 @@ export const DraggableBox = memo<DraggableBoxPropsType>(
         {inCanvas ? (
             <Rnd
             key={key}
-              className={`flex flex-col p-0 absolute border-borderColor border-[1px] border-solid`}
+              className={`flex flex-col p-0 absolute`}
               maxWidth={canvasWidth}
               onDragStop={(e, direction) => {
                 setDragging(false);
@@ -119,9 +119,9 @@ export const DraggableBox = memo<DraggableBoxPropsType>(
             </Rnd>
         ) : <div className='h-[4.5rem] w-[4.5rem] flex flex-col items-center' ref={drag} role="DraggableBox">
             <div className='w-full h-full flex items-center justify-center bg-secondary rounded-lg text-xl'>
-              {<IconToRender className="text-primary"></IconToRender>}
+              {<IconToRender className="text-primary text-2xl"></IconToRender>}
               </div>
-            <p className='text-[.65rem] font-thin mt-1'>{component.displayName}</p>
+            <p className='text-[.6rem] mt-1 text-primary'>{component.displayName}</p>
           </div>}
       </>
     );

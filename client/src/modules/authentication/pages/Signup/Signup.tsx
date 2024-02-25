@@ -1,24 +1,34 @@
 import React, { useEffect, useState } from 'react';
 import { LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons';
 import { App, Button, Card, Flex, Form, Input, Typography } from 'antd';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { useSignupMutation } from '../../../shared/apis/authApi';
 
 const { Title, Paragraph } = Typography;
 
 const Signup: React.FC = () => {
+  const navigate = useNavigate();
   const [isFormSubmittable, setIsFormSubmittable] = useState<boolean>(false);
   const [form] = Form.useForm();
   const values = Form.useWatch([], form);
   const { message } = App.useApp();
-  const [signupMutation, { isLoading, isError, error }] = useSignupMutation();
+  const [isLoading, setIsLoading] = useState(false);
+  const [signupMutation, { isError, error }] = useSignupMutation();
 
   function handleSignup(values: any) {
+    setIsLoading(true);
     signupMutation({
       ...values,
       phone: '1234567890'
-    });
+    })
+      .unwrap()
+      .then(() => {})
+      .finally(() => {
+        message.success('Please check your mail');
+        setIsLoading(false);
+        navigate('../login');
+      });
   }
 
   useEffect(() => {
@@ -30,7 +40,7 @@ const Signup: React.FC = () => {
 
   useEffect(() => {
     if (isError) {
-      message.error(error.data.message);
+      message.error(error?.data?.message || 'An error occurred');
     }
   }, [isError, error]);
 

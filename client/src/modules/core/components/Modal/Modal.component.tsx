@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Flex, Input, Modal } from 'antd';
+
 import { appIcons } from '../../constants/dashboard.constants';
 
-const App: React.FC = ({
+const AppModal: React.FC = ({
   open,
   setOpen,
   renameApp,
@@ -11,7 +12,10 @@ const App: React.FC = ({
   id,
   method,
   handleCreateApp,
-  changeIcon
+  changeIcon,
+  isAppCreating,
+  isIconLoading,
+  isAppRenaming
 }) => {
   const [selectedIcon, setSelectedIcon] = useState('email');
 
@@ -20,7 +24,7 @@ const App: React.FC = ({
   };
 
   useEffect(() => {
-    if(method === 'changeIcon') {
+    if (method === 'changeIcon') {
       changeIcon(id);
     }
   }, [newAppName]);
@@ -28,33 +32,36 @@ const App: React.FC = ({
   let footer = null;
   if (method === 'renameApp')
     footer = [
-      <Button key="back" type="primary" onClick={handleCancel}>
+      <Button key="back" danger onClick={handleCancel}>
         Cancel
       </Button>,
-      <Button onClick={() => renameApp(id)}>Rename</Button>
+      <Button type="primary" onClick={() => renameApp(id)} loading={isAppRenaming}>
+        Rename
+      </Button>
     ];
   else if (method === 'createApp')
     footer = [
-      <Button key="back" type="primary" onClick={handleCancel}>
+      <Button key="back" danger onClick={handleCancel}>
         Cancel
       </Button>,
-      <Button onClick={() => handleCreateApp()}>Create App</Button>
+      <Button type="primary" onClick={() => handleCreateApp()} loading={isAppCreating}>
+        Create App
+      </Button>
     ];
   else
     footer = [
-      <Button key="back" type="primary" onClick={handleCancel}>
+      <Button key="back" danger onClick={handleCancel}>
         Cancel
       </Button>,
-      <Button onClick={() => setNewAppName(selectedIcon)}>
-        Change</Button>
+      <Button type="primary" onClick={() => setNewAppName(selectedIcon)} loading={isIconLoading}>
+        Change
+      </Button>
     ];
 
   let title = '';
   if (method === 'createApp') title = 'Create App';
   if (method === 'renameApp') title = 'Rename App';
   if (method === 'changeIcon') title = 'Change Icon';
-
-  
 
   return (
     <Modal open={open} title={title} onCancel={handleCancel} footer={footer}>
@@ -89,4 +96,4 @@ const App: React.FC = ({
   );
 };
 
-export default App;
+export default AppModal;

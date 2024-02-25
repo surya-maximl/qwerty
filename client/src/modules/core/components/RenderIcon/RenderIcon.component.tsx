@@ -10,7 +10,7 @@ const RenderIcon: React.FC<Props> = ({ name }) => {
   let icon = appIcons.find(item => item.name === name);
   return (
     <>  
-      <Flex className="text-3xl text-primary">
+      <Flex className="text-3xl text-primary p-4">
         {!name && <MdEmail/>}
         {name && icon?.icon}
       </Flex>
