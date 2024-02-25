@@ -7,7 +7,7 @@ dotenv.config();
 const generateInviteURL = (
   invitationToken: string,
 ) => {
-  const host = 'http://localhost:3000';
+  const host = 'http://localhost:5173';
   const subpath = 'login';
 
   return `${host}/invitations/${invitationToken}`
