@@ -37,11 +37,15 @@ const authSlice = createSlice({
       })
       .addMatcher(authApi.endpoints.login.matchFulfilled, (state, action) => {
         state.user = action.payload;
-        console.log('before setting');
         setCookie('accessToken', action.payload.token);
         state.loggedIn = true;
       })
       .addMatcher(authApi.endpoints.signup.matchFulfilled, (state, action) => {
+        state.user = action.payload;
+        setCookie('accessToken', action.payload.token);
+        state.loggedIn = true;
+      })
+      .addMatcher(authApi.endpoints.handleInvitation.matchFulfilled, (state, action) => {
         state.user = action.payload;
         setCookie('accessToken', action.payload.token);
         state.loggedIn = true;

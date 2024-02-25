@@ -7,7 +7,7 @@ const generateInviteURL = (userId: string, invitationToken: string) => {
   const host = 'http://localhost:5173';
   const subpath = 'login';
 
-  return `${host}/invitations/${invitationToken}?id=${userId}`;
+  return `${host}/auth/invitations/${invitationToken}?id=${userId}`;
 };
 
 export class EmailService {

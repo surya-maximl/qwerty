@@ -16,6 +16,7 @@ type signupForm = {
 type invitationForm = {
   companyName: string;
   phoneNumber: string;
+  userId: string;
   token: string;
 };
 
@@ -53,11 +54,21 @@ export const authApi = baseApi.injectEndpoints({
       invalidatesTags: ['User']
     }),
     handleInvitation: build.mutation<User, invitationForm>({
-      query: (invitationDetails) => {
+      query: ({ companyName, phoneNumber, userId, token }) => {
         return {
           url: 'auth/setup-account-from-token',
           method: 'POST',
-          body: invitationDetails
+          body: {
+            companyName,
+            phoneNumber,
+            userId
+          }
+        };
+      },
+      transformResponse: (response, meta, arg) => {
+        return {
+          ...response,
+          token: arg.token
         };
       },
       invalidatesTags: ['User']
