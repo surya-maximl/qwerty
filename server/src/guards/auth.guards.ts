@@ -21,9 +21,11 @@ export class AuthGuard implements CanActivate{
       try {
         const user = await jwt.verify(token, process.env.JWT_TOKEN) as jwtPayload;
         const findUser = await this.user.findOne({ where: { id: user.id } })
+        console.log(findUser);
         if (!findUser) return false;
         return true;
       } catch (err) {
+        console.log("err: ", err)
         return false;
       }
   }

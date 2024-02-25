@@ -35,6 +35,11 @@ const authSlice = createSlice({
         state.user = action.payload;
         setCookie('accessToken', action.payload.token);
         state.loggedIn = true;
+      })
+      .addMatcher(authApi.endpoints.handleInvitation.matchFulfilled, (state, action) => {
+        state.user = action.payload;
+        setCookie('accessToken', action.payload.token);
+        state.loggedIn = true;
       });
   }
 });

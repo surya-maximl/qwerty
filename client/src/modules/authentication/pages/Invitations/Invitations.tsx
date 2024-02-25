@@ -4,6 +4,7 @@ import { App, Button, Card, Flex, Form, Input, Typography } from 'antd';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { useHandleInvitationMutation } from '../../../shared/apis/authApi';
 import { login } from '../../reducers';
 import { useAppDispatch } from '../../shared/hooks/useAppDispatch';
 
@@ -17,25 +18,14 @@ const Invitations: React.FC = () => {
   const values = Form.useWatch([], form);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const [handleInvitation, { isLoading, isError, error }] = useHandleInvitationMutation();
 
   const handleRedirect = async (values: any) => {
-    //form submit
-    console.log(values);
-    const data = {
+    handleInvitation({
       companyName: values.companyName,
-      companySize: values.companySize,
       phoneNumber: values.phoneNumber,
       token: invitationId
-    };
-    try {
-      const res = await axios.post('http://localhost:3000/setup-account-from-token', data);
-      console.log(res);
-      dispatch(login())
-        .unwrap()
-        .then(() => navigate(`/app?id=${res.id}`));
-    } catch (e) {
-      console.log(e);
-    }
+    });
   };
 
   // TODO
@@ -46,6 +36,12 @@ const Invitations: React.FC = () => {
       .then(() => setIsFormSubmittable(true))
       .catch(() => setIsFormSubmittable(false));
   }, [form, values]);
+
+  useEffect(() => {
+    if (isError) {
+      message.error(error.data.message);
+    }
+  }, [isError, error]);
 
   return (
     <Card className="mt-16 shadow-sm w-full max-w-sm border-border">
@@ -67,14 +63,6 @@ const Invitations: React.FC = () => {
               <Input prefix={<UserOutlined />} placeholder="Enter your full name" />
             </Form.Item>
             <Form.Item
-              name="companySize"
-              label="Company Size"
-              className="font-medium"
-              rules={[{ required: true, message: 'Enter your company size!' }]}
-            >
-              <Input prefix={<UserOutlined />} placeholder="Enter your company size" />
-            </Form.Item>
-            <Form.Item
               name="phoneNumber"
               label="Phone Number"
               className="font-medium"
@@ -89,6 +77,7 @@ const Invitations: React.FC = () => {
                 size="large"
                 className="w-full"
                 disabled={!isFormSubmittable}
+                loading={isLoading}
               >
                 Continue
               </Button>

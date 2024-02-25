@@ -9,9 +9,8 @@ import LeftPanel from '../../components/Editor/LeftPanel.component';
 import QueryPanel from '../../components/Editor/QueryPanel.components';
 import RightPanel from '../../components/Editor/RightPanel.component';
 import { coreActions } from '../../reducers/core.reducer';
-import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import { getCookie } from '../../utils/authUtils
+import { getCookie } from '../../utils/authUtils';
 
 const Editor: React.FC = () => {
   const [canvasWidth, setCanvasWidth] = useState(0);

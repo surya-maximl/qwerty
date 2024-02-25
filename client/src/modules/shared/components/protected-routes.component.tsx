@@ -10,6 +10,8 @@ type ProtectedRoutesProps = {
 export function ProtectedRoutes({ isAuthRoute = false }: ProtectedRoutesProps): JSX.Element {
   const { loggedIn } = useAuth();
 
+  console.log('isLofasdfadf', loggedIn);
+
   if (isAuthRoute) {
     return !loggedIn ? (
       <AuthPageLayout>
