@@ -7,13 +7,25 @@ import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectUnsubscribedError } from 'rxjs';
+import { EmailService } from './email.service';
 const scrypt = promisify(_scrypt);
+
+interface jwtPayload {
+  name: string;
+  id: string;
+  iat: number;
+  exp: number;
+}
+
 
 @Injectable()
 export class AuthService {
-  constructor(@InjectRepository(User) private readonly user: Repository<User>) { }
+  constructor(
+    @InjectRepository(User) private readonly user: Repository<User>,
+    private readonly emailService: EmailService
+  ) { }
 
-  async signup({ email, password, name, phone }: SignupDto) {
+  async signup({ email, password, name }: SignupDto) {
 
     const user = await this.user.findOne({ where: { email: email } })
 
@@ -29,7 +41,6 @@ export class AuthService {
       name,
       email,
       password: result,
-      phoneNumber: phone
     })
 
     await this.user.save(newUser)
@@ -40,28 +51,36 @@ export class AuthService {
     }, process.env.JWT_TOKEN, {
       expiresIn: 360000
     });
-    return {
-      username: newUser.name,
-      id: newUser.id,
-      token,
-      email: newUser.email
-    };
+
+    console.log(token);
+
+    return this.emailService.sendWelcomeEmail(newUser.email, newUser.name, token);
+
   }
 
   async signin({ email, password }: SigninDto) {
     const user = await this.user.findOne({ where: { email: email } })
     if (!user) throw new NotFoundException("User Not found");
+    let token = ""
+    if (!user.validated) {
+      token = await jwt.sign({
+        name: user.name,
+        id: user.id
+      }, process.env.JWT_TOKEN, {
+        expiresIn: 360000
+      });
+      await this.emailService.sendWelcomeEmail(email, user.name, token);
+      return {
+        msg: "Setup Account",
+        emailSent: true
+      }
+    }
 
     const [salt, storedHash] = user.password.split('.');
     const hash = (await scrypt(password, salt, 32)) as Buffer;
     if (storedHash !== hash.toString('hex')) throw new BadRequestException("Password or email do not match")
 
-    const token = await jwt.sign({
-      name: user.name,
-      id: user.id
-    }, process.env.JWT_TOKEN, {
-      expiresIn: 360000
-    });
+
 
     return {
       username: user.name,
@@ -70,6 +89,29 @@ export class AuthService {
       email
     };
   }
+
+
+  async setUpAccount({ company, phone, token }: any) {
+    const userToken = await jwt.decode(token) as jwtPayload;
+    // console.log(typeof userToken)
+    console.log(userToken, company, phone);
+    const findUser = await this.user.findOne({ where: { id: userToken?.id } })
+    if (!findUser) throw new NotFoundException("User Not Found. Please register");
+    findUser.validated = true;
+    findUser.company = company;
+    findUser.phoneNumber = phone;
+
+
+    const update = await this.user.save(findUser);
+    console.log(update);
+    return {
+      username: findUser.name,
+      id: findUser.id,
+      token,
+      email: findUser.email
+    };
+  }
+
 
   async updateUserInfo(userId: string, body: UserInfoDto) {
     const user = await this.user.findOne({ where: { id: userId } })

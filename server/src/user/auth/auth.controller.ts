@@ -18,12 +18,18 @@ export class AuthController {
   }
 
   @Post('/signin')
-  async signinp(@Body() body: SigninDto) {
+  async signin(@Body() body: SigninDto) {
     return await this.authService.signin(body);
   }
 
   @Get()
   whoAmI(@User() user) {
+    return user;
+  }
+
+  @Post('setup-account-from-token')
+  async setUpAccount(@Body() body: any) {
+    const user = await this.authService.setUpAccount(body);
     return user;
   }
 

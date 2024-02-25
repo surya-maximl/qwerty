@@ -26,7 +26,10 @@ export class User extends BaseEntity {
   @Column({ name: 'phone_number', nullable: true })
   phoneNumber: string;
 
-  @Column({ name: 'phone_number', nullable: true })
+  @Column({ default: false })
+  validated: boolean
+
+  @Column({ nullable: true })
   company: string;
 
   @CreateDateColumn({ default: new Date(), name: 'created_at' })
