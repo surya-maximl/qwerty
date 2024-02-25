@@ -72,12 +72,16 @@ export class AuthService {
   }
 
   async updateUserInfo(userId: string, body: UserInfoDto) {
-    const app = await this.user.findOne({ where: { id: userId } })
-    if (!app) throw new NotFoundException("User Not Found");
-    Object.assign(app, body);
-    const updatedUserInfo = await this.user.save(app);
+    const user = await this.user.findOne({ where: { id: userId } })
+    if (!user) throw new NotFoundException("User Not Found");
+    Object.assign(user, body);
+    const updatedUserInfo = await this.user.save(user);
 
     return updatedUserInfo
   }
-
+  async getUserInfo(userId: string) {
+    const user = await this.user.findOne({ where: { id: userId } })
+    if (!user) throw new NotFoundException("User Not Found");
+    return user;
+  }
 }

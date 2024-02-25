@@ -33,4 +33,12 @@ export class AuthController {
     const updatedInfo = await this.authService.updateUserInfo(user.id, body);
     return updatedInfo;
   }
+
+  @UseGuards(AuthGuard)
+  @Get("update-user-info")
+  async getUserInfo(@User() user: any) {
+    const userInfo = await this.authService.getUserInfo(user.id);
+    return userInfo;
+  }
+
 }
