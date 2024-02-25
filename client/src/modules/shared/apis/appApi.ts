@@ -17,6 +17,11 @@ type RenameAppProps = {
   appId: string;
 };
 
+type ChangeIconProps = {
+  id: string;
+  icon: string;
+};
+
 export const appApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
     getAllApps: build.query<AppType[], void>({
@@ -28,6 +33,12 @@ export const appApi = baseApi.injectEndpoints({
             'Content-Type': 'application/json'
           }
         };
+      },
+      transformResponse: (response) => {
+        const transformedResponse = response.sort(
+          (a, b) => a.id.charCodeAt(0) - b.id.charCodeAt(0)
+        );
+        return transformedResponse;
       },
       providesTags: ['Apps']
     }),
@@ -54,8 +65,36 @@ export const appApi = baseApi.injectEndpoints({
         };
       },
       invalidatesTags: ['Apps']
+    }),
+    deleteApp: build.mutation<AppType, string>({
+      query: (appId) => {
+        return {
+          url: `apps/${appId}`,
+          method: 'DELETE'
+        };
+      },
+      invalidatesTags: ['Apps']
+    }),
+    changeIcon: build.mutation<AppType, ChangeIconProps>({
+      query: ({ icon, id }) => {
+        return {
+          url: 'apps/icon',
+          method: 'PUT',
+          body: {
+            icon,
+            id
+          }
+        };
+      },
+      invalidatesTags: ['Apps']
     })
   })
 });
 
-export const { useGetAllAppsQuery, useCreateAppMutation, useRenameAppMutation } = appApi;
+export const {
+  useGetAllAppsQuery,
+  useCreateAppMutation,
+  useRenameAppMutation,
+  useDeleteAppMutation,
+  useChangeIconMutation
+} = appApi;

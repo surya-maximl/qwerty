@@ -21,11 +21,14 @@ type invitationForm = {
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
-    fetchUserDetails: build.query<User, void>({
-      query: () => {
+    fetchUserDetails: build.query<User, string>({
+      query: (token) => {
         return {
           url: 'auth',
-          method: 'GET'
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         };
       }
     }),

@@ -1,8 +1,8 @@
-import { useEffect } from 'react';
-import { App, message } from 'antd';
+import { Flex, Spin } from 'antd';
 import { Navigate, Outlet } from 'react-router-dom';
 
 import AuthPageLayout from '../../authentication/components/AuthPageLayout/AuthPageLayout.componet';
+import { getCookie } from '../../core/utils/authUtils';
 import { useFetchUserDetailsQuery } from '../apis/authApi';
 import { useAuth } from '../hooks/useAuth';
 
@@ -11,25 +11,28 @@ type ProtectedRoutesProps = {
 };
 
 export function ProtectedRoutes({ isAuthRoute = false }: ProtectedRoutesProps): JSX.Element {
+  const cookie = getCookie('accessToken');
   const { loggedIn } = useAuth();
-  const { message } = App.useApp();
-  const { isError, error } = useFetchUserDetailsQuery();
 
-  useEffect(() => {
-    if (isError) {
-      message.error(error.data.message);
-    }
-  }, [isError, error]);
+  let { isLoading, isFetching } = useFetchUserDetailsQuery(cookie);
 
-  if (isAuthRoute) {
-    return !loggedIn ? (
-      <AuthPageLayout>
-        <Outlet />
-      </AuthPageLayout>
-    ) : (
-      <Navigate to="/app" replace />
+  if (isLoading || isFetching) {
+    return (
+      <Flex className="h-screen w-screen items-center justify-center bg-secondary">
+        <Spin size="large" />
+      </Flex>
     );
   } else {
-    return loggedIn ? <Outlet /> : <Navigate to="/auth/login" replace />;
+    if (isAuthRoute) {
+      return !loggedIn ? (
+        <AuthPageLayout>
+          <Outlet />
+        </AuthPageLayout>
+      ) : (
+        <Navigate to="/app" replace />
+      );
+    } else {
+      return loggedIn ? <Outlet /> : <Navigate to="/auth/login" replace />;
+    }
   }
 }

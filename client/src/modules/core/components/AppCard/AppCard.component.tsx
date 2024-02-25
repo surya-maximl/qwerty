@@ -1,4 +1,4 @@
-import { Button, Dropdown, Flex, Typography, Card } from 'antd';
+import { Button, Card, Dropdown, Flex, Skeleton, Typography } from 'antd';
 import { FaRegEdit } from 'react-icons/fa';
 import { TbDotsVertical } from 'react-icons/tb';
 import { useNavigate } from 'react-router-dom';
@@ -11,14 +11,22 @@ type Props = {
   handleDropdownClick: (e: any, id: string) => void;
 };
 
-const AppCard: React.FC<Props> = ({ item, handleDropdownClick }) => {
+const AppCard: React.FC<Props> = ({ item, handleDropdownClick, selectedApp }) => {
   const navigate = useNavigate();
   return (
-    <Card key={item?.id} className="border-border shadow-sm shrink-0">
+    <Card
+      key={item?.id}
+      className="border-border shadow-sm shrink-0"
+      loading={item?.id === selectedApp}
+    >
       <Flex vertical className="gap-8">
         <Flex justify="space-between" className="w-full">
           <Flex className="rounded-md bg-secondary">
-            <RenderIcon name={item.icon} />
+            {item?.id === selectedApp ? (
+              <Skeleton.Image active className="!h-16 !w-16" />
+            ) : (
+              <RenderIcon name={item.icon} />
+            )}
           </Flex>
           <Dropdown
             menu={{
@@ -39,7 +47,7 @@ const AppCard: React.FC<Props> = ({ item, handleDropdownClick }) => {
             className="ext-lg px-6 flex justify-center items-center"
             onClick={() => navigate(`/app/editor/${item?.id}`)}
           >
-            <FaRegEdit className='t mr-1'/>
+            <FaRegEdit className="t mr-1" />
             Edit
           </Button>
         </Flex>
