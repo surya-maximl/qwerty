@@ -124,4 +124,15 @@ export class AuthService {
     if (!user) throw new NotFoundException("User Not Found");
     return user;
   }
+
+  async userDetails(user: any) {
+    const id = user.id;
+    const findUser = await this.user.findOne({ where: { id } });
+    if (!findUser) throw new NotFoundException();
+    return {
+      email: findUser.email,
+      userName: findUser.email,
+      id: findUser.id,
+    }
+  }
 }

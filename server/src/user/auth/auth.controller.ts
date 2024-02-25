@@ -24,6 +24,7 @@ export class AuthController {
 
   @Get()
   whoAmI(@User() user) {
+    const userDetails = this.authService.userDetails(user);
     return user;
   }
 
