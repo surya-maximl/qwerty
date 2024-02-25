@@ -4,10 +4,9 @@ export default {
   theme: {
     extend: {
       colors: {
-        border: 'rgb(230, 232, 235)',
         primary: '#475569',
-        secondary: '#E2E8F0',
-        borderColor: '#CBD5E1'
+        secondary: '#CBD5E1',
+        border: 'hsl(214.3 31.8% 91.4%)'
       }
     },
     screens: {
@@ -19,6 +18,7 @@ export default {
       'max-sm': { max: '640px' },
 
       //min-width
+      xs: '480px',
       sm: '641px',
       md: '769px',
       lg: '1025px',

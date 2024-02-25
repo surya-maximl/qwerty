@@ -12,7 +12,7 @@ const generateInviteURL = (
   const subpath = 'login';
 
   return `${host}/invitations/${invitationToken}?id=${userId}`
-};
+
 
 export class EmailService {
 

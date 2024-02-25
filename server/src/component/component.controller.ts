@@ -6,7 +6,7 @@ import { User } from 'src/user/decorators/user.decorator';
 import { AuthGuard } from 'src/guards/auth.guards';
 import { appendFile } from 'fs';
 
-@UseGuards(AuthGuard)
+// @UseGuards(AuthGuard)
 @Controller('components')
 export class ComponentController {
   constructor(private readonly componentService: ComponentService) { }

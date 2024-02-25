@@ -1,15 +1,34 @@
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
+import { App, message } from 'antd';
+import { Navigate, Outlet } from 'react-router-dom';
 
+import AuthPageLayout from '../../authentication/components/AuthPageLayout/AuthPageLayout.componet';
+import { useFetchUserDetailsQuery } from '../apis/authApi';
 import { useAuth } from '../hooks/useAuth';
 
-export function ProtectedRoutes(): JSX.Element {
-  const { loggedIn } = useAuth();
-  const { pathname } = useLocation();
+type ProtectedRoutesProps = {
+  isAuthRoute?: boolean;
+};
 
-  const isAuthRoute = pathname.split('/')[1] === 'auth';
+export function ProtectedRoutes({ isAuthRoute = false }: ProtectedRoutesProps): JSX.Element {
+  const { loggedIn } = useAuth();
+  const { message } = App.useApp();
+  const { isError, error } = useFetchUserDetailsQuery();
+
+  useEffect(() => {
+    if (isError) {
+      message.error(error.data.message);
+    }
+  }, [isError, error]);
 
   if (isAuthRoute) {
-    return !loggedIn ? <Outlet /> : <Navigate to="/app" replace />;
+    return !loggedIn ? (
+      <AuthPageLayout>
+        <Outlet />
+      </AuthPageLayout>
+    ) : (
+      <Navigate to="/app" replace />
+    );
   } else {
     return loggedIn ? <Outlet /> : <Navigate to="/auth/login" replace />;
   }
