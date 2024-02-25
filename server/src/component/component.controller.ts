@@ -4,41 +4,42 @@ import { ComponentEntity } from './entities/component.entity';
 // import { AuthGuard } from '@nestjs/passport';
 import { User } from 'src/user/decorators/user.decorator';
 import { AuthGuard } from 'src/guards/auth.guards';
+import { appendFile } from 'fs';
 
 // @UseGuards(AuthGuard)
 @Controller('components')
 export class ComponentController {
   constructor(private readonly componentService: ComponentService) { }
 
-  @Get()
-  async getAllComponent(@User() user: any) {
-    const components = await this.componentService.getAllComponents(user?.id);
+  @Get(':appId')
+  async getAllComponent(@Param('appId') appId: string, @User() user: any) {
+    const components = await this.componentService.getAllComponents(appId, user?.id);
     return components
   }
 
-  @Get(':id')
-  async getComponent(@Param('id') id: string, @User() user: any) {
-    const component = await this.componentService.getComponent(id, user?.id);
+  @Get(':appId/:id')
+  async getComponent(@Param('id') id: string, @Param('appId') appId: string, @User() user: any) {
+    const component = await this.componentService.getComponent(id, appId, user?.id);
     return component
   }
 
-  @Post()
-  async createComponent(@Body() content, @User() user: any) {
-    const component = await this.componentService.createComponent(content, user?.id);
+  @Post(':appId')
+  async createComponent(@Param('appId') appId: string, @Body() content: any, @User() user: any) {
+    const component = await this.componentService.createComponent(appId, content, user?.id);
     return component;
   }
 
 
-  @Patch(':id')
-  async updateComponent(@Param('id') id: string, @Body() attr: Partial<ComponentEntity>, @User() user: any) {
-    const component = await this.componentService.updateComponent(id, attr, user?.id);
+  @Patch(':appId/:id')
+  async updateComponent(@Param('id') id: string, @Param('appId') appId: string, @Body() attr: Partial<ComponentEntity>, @User() user: any) {
+    const component = await this.componentService.updateComponent(id, appId, attr, user?.id);
     return component;
   }
 
-  @Delete(':id')
-  async deleteComponent(@Param('id') id: string, @User() user: any) {
+  @Delete(':appId/:id')
+  async deleteComponent(@Param('id') id: string, @Param('appId') appId: string,, @User() user: any) {
     // return id;
-    const component = await this.componentService.deleteComponent(id, user?.id);
+    const component = await this.componentService.deleteComponent(id, appId, user?.id);
     return component;
   }
 
