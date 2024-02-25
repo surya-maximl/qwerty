@@ -5,7 +5,7 @@ import { AppsService } from './apps.service';
 import { User } from 'src/user/decorators/user.decorator';
 import { AuthGuard } from 'src/guards/auth.guards';
 
-// @UseGuards(AuthGuard)
+@UseGuards(AuthGuard)
 @Controller('apps')
 export class AppsController {
 
