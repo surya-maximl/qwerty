@@ -19,12 +19,15 @@ export class User extends BaseEntity {
 
   @Column()
   email: string;
-  
+
   @Column({ name: 'password_digest' })
   password: string;
 
   @Column({ name: 'phone_number', nullable: true })
   phoneNumber: string;
+
+  @Column({ name: 'phone_number', nullable: true })
+  company: string;
 
   @CreateDateColumn({ default: new Date(), name: 'created_at' })
   createdAt: Date;
