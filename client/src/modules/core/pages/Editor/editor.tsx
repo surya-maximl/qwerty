@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Flex, Layout } from 'antd';
+import axios from 'axios';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 
@@ -10,7 +11,6 @@ import LeftPanel from '../../components/Editor/LeftPanel.component';
 import QueryPanel from '../../components/Editor/QueryPanel.components';
 import RightPanel from '../../components/Editor/RightPanel.component';
 import { coreActions } from '../../reducers/core.reducer';
-import axios from 'axios';
 
 const Editor: React.FC = () => {
   const [canvasWidth, setCanvasWidth] = useState(0);
@@ -40,13 +40,11 @@ const Editor: React.FC = () => {
 
   const { Content } = Layout;
 
-  
-
   return (
     <>
       <Layout className="min-h-screen">
         <DndProvider backend={HTML5Backend}>
-          <LeftPanel />
+          <LeftPanel showProfile />
           <Layout>
             <EditorHeader />
             <Content>
