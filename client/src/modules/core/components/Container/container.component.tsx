@@ -11,6 +11,7 @@ import { Direction, DraggableData } from '../../interfaces/editor.interface';
 import { DraggableBox } from '../DraggableBox/dragglebox.component';
 import { componentTypes } from '../Editor/WidgetManager/widgetsComponents';
 import { getCookie } from '../../utils/authUtils';
+import { useParams } from 'react-router-dom';
 
 const NO_OF_GRIDS = 43;
 
@@ -21,13 +22,14 @@ const Container: React.FC<{ canvasWidth: number }> = ({ canvasWidth }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
   const gridWidth = Number(canvasWidth) / NO_OF_GRIDS;
+  const { id } = useParams()
 
   useEffect(() => {
     const token = getCookie("accessToken");
     let config = {
       method: 'get',
       maxBodyLength: Infinity,
-      url: `http://localhost:3000/components`,
+      url: `http://localhost:3000/components/${id}`,
       headers: {
         'Content-Type': 'application/json',
         Authorization:
@@ -48,9 +50,7 @@ const Container: React.FC<{ canvasWidth: number }> = ({ canvasWidth }) => {
         }
       })
       .catch((error) => {
-        if (error.response.data.message === 'Components not found') {
-          // setBoxes({});
-        }
+        console.log(error)
       });
   }, []);
 
@@ -99,14 +99,15 @@ const Container: React.FC<{ canvasWidth: number }> = ({ canvasWidth }) => {
 
       let newBoxes = { ...boxes };
 
+      const token = getCookie("accessToken");
       let config = {
         method: 'patch',
         maxBodyLength: Infinity,
-        url: `http://localhost:3000/components/${componentId}`,
+        url: `http://localhost:3000/components/${id}/${componentId}`,
         headers: {
           'Content-Type': 'application/json',
           Authorization:
-            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSGFyc2ggR3VwdGEiLCJpZCI6IjdhNWFmOGUxLTBjZjktNGQzMi05NTM0LWE2ZDg1ZjFjZDIxOSIsImlhdCI6MTcwODYzMDg3MiwiZXhwIjoxNzA4OTkwODcyfQ.Q4WRVzsw1b67pBq-JMJ-0ErCWo09M0UYFS8ID_OAvBc'
+            `Bearer ${token}`
         }
       };
   
@@ -136,7 +137,7 @@ const Container: React.FC<{ canvasWidth: number }> = ({ canvasWidth }) => {
 
   const onResizeStop = useCallback(
     (
-      id: string,
+      componentId: string,
       e: any,
       direction: Direction,
       ref: React.ElementRef<'div'>,
@@ -158,7 +159,7 @@ const Container: React.FC<{ canvasWidth: number }> = ({ canvasWidth }) => {
         top: boxTop,
         width: boxWidth,
         height: boxHeight
-      } = boxes[id] || defaultData;
+      } = boxes[componentId] || defaultData;
 
       const boundingRect = document
         .getElementsByClassName('real-canvas')[0]
@@ -167,24 +168,45 @@ const Container: React.FC<{ canvasWidth: number }> = ({ canvasWidth }) => {
       let newWidth = boxWidth + deltaWidth;
 
       boxHeight = boxHeight + deltaHeight;
-      if (boxHeight < boxes[id].defaultSize.height) boxHeight = boxes[id].defaultSize.height;
-      if (newWidth < boxes[id].defaultSize.width) newWidth = boxes[id].defaultSize.width;
+      if (boxHeight < boxes[componentId].defaultSize.height) boxHeight = boxes[componentId].defaultSize.height;
+      if (newWidth < boxes[componentId].defaultSize.width) newWidth = boxes[componentId].defaultSize.width;
 
       boxTop = y;
       boxLeft = (x * 100) / canvasWidth;
 
-      let newBoxes = {
-        ...boxes,
-        [id]: {
-          ...boxes[id],
-          width: newWidth,
-          height: boxHeight,
-          left: boxLeft,
-          top: boxTop
+      const token = getCookie("accessToken");
+      let config = {
+        method: 'patch',
+        maxBodyLength: Infinity,
+        url: `http://localhost:3000/components/${id}/${componentId}`,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization:
+            `Bearer ${token}`
         }
       };
+  
+      axios
+        .request(config)
+        .then((response) => {
+          let newBoxes = {
+            ...boxes,
+            [componentId]: {
+              ...boxes[componentId],
+              width: newWidth,
+              height: boxHeight,
+              left: boxLeft,
+              top: boxTop
+            }
+          };
+    
+          setBoxes(newBoxes);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
 
-      setBoxes(newBoxes);
+      
     },
     [setBoxes, boxes, gridWidth]
   );
@@ -279,16 +301,15 @@ const Container: React.FC<{ canvasWidth: number }> = ({ canvasWidth }) => {
           canvasBoundingRect
         );
 
-        console.log('new: ', newComponent);
-
+        const token = getCookie("accessToken")
         let config = {
           method: 'post',
           maxBodyLength: Infinity,
-          url: `http://localhost:3000/components`,
+          url: `http://localhost:3000/components/${id}`,
           headers: {
             'Content-Type': 'application/json',
             Authorization:
-              'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSGFyc2ggR3VwdGEiLCJpZCI6IjdhNWFmOGUxLTBjZjktNGQzMi05NTM0LWE2ZDg1ZjFjZDIxOSIsImlhdCI6MTcwODYzMDg3MiwiZXhwIjoxNzA4OTkwODcyfQ.Q4WRVzsw1b67pBq-JMJ-0ErCWo09M0UYFS8ID_OAvBc'
+              `Bearer ${token}`
           },
           data: newComponent
         };
@@ -315,15 +336,16 @@ const Container: React.FC<{ canvasWidth: number }> = ({ canvasWidth }) => {
     [moveBox]
   );
 
-  function deleteComponent(id: string) {
+  function deleteComponent(componentId: string) {
+    const token = getCookie("accessToken");
     let config = {
       method: 'delete',
       maxBodyLength: Infinity,
-      url: `http://localhost:3000/components/${id}`,
+      url: `http://localhost:3000/components/${id}/${componentId}`,
       headers: {
         'Content-Type': 'application/json',
         Authorization:
-          'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSGFyc2ggR3VwdGEiLCJpZCI6IjdhNWFmOGUxLTBjZjktNGQzMi05NTM0LWE2ZDg1ZjFjZDIxOSIsImlhdCI6MTcwODYzMDg3MiwiZXhwIjoxNzA4OTkwODcyfQ.Q4WRVzsw1b67pBq-JMJ-0ErCWo09M0UYFS8ID_OAvBc'
+          `Bearer ${token}`
       }
     };
 
@@ -332,7 +354,7 @@ const Container: React.FC<{ canvasWidth: number }> = ({ canvasWidth }) => {
       .then((response) => {
         if (response.data.msg === 'Component Deleted Successfully') {
           setBoxes(update(boxes, {
-            $unset: [id],
+            $unset: [componentId],
           }));
         }
       })
@@ -367,7 +389,7 @@ const Container: React.FC<{ canvasWidth: number }> = ({ canvasWidth }) => {
           return <DraggableBox {...DraggableBoxProps} />;
         })}
         {Object.keys(boxes).length === 0 && !isDragging && (
-          <div className="flex items-center justify-center mx-auto p-5 border-1 border-solid h-1/3">
+          <div className="flex items-center justify-center mx-auto p-5 border-1 border-dotted h-1/3 bg-slate-400">
             You haven&apos;t added any components yet. Drag components from the right sidebar and
             drop here.
           </div>

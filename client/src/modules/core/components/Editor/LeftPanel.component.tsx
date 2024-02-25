@@ -43,17 +43,16 @@ const items: MenuItem[] = [
   )
 ];
 
-const LeftPanel: React.FC<LeftPanelProps> = ({ showProfile = false }) => {
-  const { user } = useAuth();
+const LeftPanel: React.FC<LeftPanelProps> = () => {
 
   return (
     <Sider collapsed collapsedWidth={48} style={leftPanelStyle}>
       <Flex vertical className="h-full gap-2">
         <Flex className="h-12 items-center justify-center border-solid border-0 border-b-[1px] border-border">
-          <Link to="/app">
+          <Link to="/app" className='h-full w-full flex justify-center items-center'>
             <img
               className="object-contain h-7 w-7 hover:scale-105 transition ease-in-out"
-              src="https://app.tooljet.com/logo.svg"
+              src="/favicon.ico"
               alt="Tooljet Logo"
             />
           </Link>

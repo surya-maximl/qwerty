@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 import { App, Button, Card, Dropdown, Flex, Input, Layout, Skeleton, Typography } from 'antd';
 import axios from 'axios';
 import Fuse from 'fuse.js';
+import { FaRegEdit } from 'react-icons/fa';
 import { IoMdAdd } from 'react-icons/io';
 import { MdDelete, MdDriveFileRenameOutline, MdOutlineChangeCircle } from 'react-icons/md';
-import { useNavigate } from 'react-router-dom';
 import { TbDotsVertical } from 'react-icons/tb';
-import { FaRegEdit } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 import {
   useCreateAppMutation,
@@ -14,12 +14,13 @@ import {
   useRenameAppMutation
 } from '../../../shared/apis/appApi';
 import { useAuth } from '../../../shared/hooks/useAuth';
+import DashboardHeader from '../../components/Dashboard/DashboardHeader.component';
 import LeftPanel from '../../components/Editor/LeftPanel.component';
 import Modal from '../../components/Modal/Modal.component';
-import RenderIcon from '../../components/RenderIcon/RenderIcon.component';
-import { items } from '../../constants/dashboard.constants';
 import UserInfoModal from '../../components/Modal/UserInfoModal.component';
-import DashboardHeader from '../../components/Dashboard/DashboardHeader.component';
+import RenderIcon from '../../components/RenderIcon/RenderIcon.component';
+import { appEvents } from '../../constants/dashboard.constants';
+import AppCard from '../../components/AppCard/AppCard.component';
 
 const { Content } = Layout;
 const { Title, Paragraph } = Typography;
@@ -99,7 +100,7 @@ const Dashboard = () => {
     setSearchQuery('');
     setOpen(true);
   };
-  
+
   const handleDropdownClick = (e: any, id: string) => {
     if (e.key === '1') {
       handleAppEvents('renameApp', id);
@@ -184,7 +185,7 @@ const Dashboard = () => {
 
   return (
     <Layout className="min-h-screen">
-      <UserInfoModal setOpen={setUserInfoOpen} open={userInfoOpen}/>
+      <UserInfoModal setOpen={setUserInfoOpen} open={userInfoOpen} />
       <Modal
         renameApp={renameApp}
         handleCreateApp={handleCreateApp}
@@ -196,105 +197,79 @@ const Dashboard = () => {
         id={clickedId}
         method={method}
       />
-      <DashboardHeader setOpen={setUserInfoOpen} open={userInfoOpen}/>
-      <Content>
-        <Flex vertical className="h-full" gap="large">
-          <Flex justify="center" className="p-4 py-8 gap-4">
-            <Card className="border-border shadow-sm">
-              <Flex align="center" justify="center" gap="middle">
-                 <Button
-                  type="primary"
-                  size="large"
-                  className="mr-4 flex items-center"
-                  onClick={() => {
-                    setMethod('createApp');
-                    setOpen(true);
-                  }}
-                >
-                  <IoMdAdd className="text-xl mr-1" />
-                  Create App
-                </Button>
-                <Dropdown menu={{ items }} open={searchQuery !== ''}>
-                  <Input.Search
-                    placeholder="search apps"
-                    allowClear
-                    className="h-fit"
-                    style={{ width: '50%' }}
+        <LeftPanel />
+      <Layout>
+      <DashboardHeader setOpen={setUserInfoOpen} open={userInfoOpen} />
+        <Content>
+          <Flex vertical className="h-full" gap="large">
+            <Flex justify="center" className="p-4 py-8 gap-4">
+                  <Button
+                    type="primary"
                     size="large"
-                    value={searchQuery}
-                    onChange={(e) => handleSearchQueryChange(e)}
-                  />
-                </Dropdown>
-              </Flex>
-            </Card>
-          </Flex>
-
-          <Flex vertical className="p-4 md:px-20 w-full">
-            {isLoading && isFetching ? (
-              <Flex className="w-full grid grid-cols-2 sm:grid-cols-4 gap-10">
-                <Skeleton.Button active className="!w-full !h-32" />
-                <Skeleton.Button active className="!w-full !h-32" />
-                <Skeleton.Button active className="!w-full !h-32" />
-                <Skeleton.Button active className="!w-full !h-32" />
-                <Skeleton.Button active className="!w-full !h-32" />
-              </Flex>
-            ) : apps.length === 0 ? (
-              <Card className="shadow-sm border-border py-10">
-                <Flex vertical align="center" justify="center" className="w-full">
-                  <Title className="!font-extrabold tracking-tight">
-                    Welcome to your new Workspace!
-                  </Title>
-                  <Paragraph className="text-xl text-secondary">
-                    You can get started by creating a new application
-                  </Paragraph>
-                  <Button type="primary" icon={<IoMdAdd />} className="mt-4">
-                    Create New App
+                    className="mr-4 flex items-center"
+                    onClick={() => {
+                      setMethod('createApp');
+                      setOpen(true);
+                    }}
+                  >
+                    <IoMdAdd className="text-xl mr-1" />
+                    Create App
                   </Button>
-                </Flex>
-              </Card>
-            ) : (
-              <Flex className="w-full grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
-                {apps.map((item) => (
-                  <Card key={item?.id} className="border-border shadow-sm shrink-0">
-                    <Flex vertical className="gap-8">
-                      <Flex justify="space-between" align="center" className="w-full">
-                        <Flex className="h-6 w-6 rounded-md bg-secondary/40">
-                          {/* TODO: Some error in this component */}
-                          <RenderIcon name={item.icon} />
-                        </Flex>
-                        <Dropdown
-                          menu={{ onClick: (e) => handleDropdownClick(e, item?.id), items }}
-                          placement="bottomLeft"
-                          arrow
-                          trigger={['click']}
-                        >
-                          <Button
-                            icon={<TbDotsVertical className="text-lg mt-[1.5px] ml-[0.5px]" />}
-                          />
-                        </Dropdown>
-                      </Flex>
-                      <Flex justify="space-between" align="center">
-                        <Typography.Text className="text-lg font-semibold">
-                          {item?.name}
-                        </Typography.Text>
-                        <Button
-                          type="primary"
-                          className="px-6"
-                          icon={<FaRegEdit />}
-                          onClick={() => navigate(`/app/editor/${item?.id}`)}
-                        >
-                          Edit
-                        </Button>
-                      </Flex>
-                    </Flex>
-                  </Card>
-                ))}
-              </Flex>
-            )}
-          </Flex>
-        </Flex>
-      </Content>
+                  <Dropdown menu={{ items }} open={searchQuery !== ''}>
+                    <Input.Search
+                      placeholder="search apps"
+                      allowClear
+                      className="h-fit"
+                      style={{ width: '50%' }}
+                      size="large"
+                      value={searchQuery}
+                      onChange={(e) => handleSearchQueryChange(e)}
+                    />
+                  </Dropdown>
+            </Flex>
 
+            <Flex vertical className="p-4 md:px-20 w-full">
+              {isLoading && isFetching ? (
+                <Flex className="w-full grid grid-cols-2 sm:grid-cols-4 gap-10">
+                  <Skeleton.Button active className="!w-full !h-32" />
+                  <Skeleton.Button active className="!w-full !h-32" />
+                  <Skeleton.Button active className="!w-full !h-32" />
+                  <Skeleton.Button active className="!w-full !h-32" />
+                  <Skeleton.Button active className="!w-full !h-32" />
+                </Flex>
+              ) : apps.length === 0 ? (
+                <Card className="shadow-sm border-border py-10">
+                  <Flex vertical align="center" justify="center" className="w-full">
+                    <Title className="!font-extrabold tracking-tight">
+                      Welcome to your new Workspace!
+                    </Title>
+                    <Paragraph className="text-xl text-secondary">
+                      You can get started by creating a new application
+                    </Paragraph>
+                    <Button
+                      type="primary"
+                      icon={<IoMdAdd />}
+                      className="mt-4"
+                      onClick={() => {
+                        setMethod('createApp');
+                        setOpen(true);
+                      }}
+                    >
+                      Create New App
+                    </Button>
+                  </Flex>
+                </Card>
+              ) : (
+                <Flex className="w-full grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
+                  {apps.map((item) => (
+                    <AppCard item={item} handleDropdownClick={handleDropdownClick}/>
+                  ))}
+                </Flex>
+              )}
+            </Flex>
+          </Flex>
+        </Content>
+      </Layout>
     </Layout>
   );
 };
