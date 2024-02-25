@@ -1,58 +1,51 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { LoadingOutlined } from '@ant-design/icons';
+import { Flex, Skeleton, Spin } from 'antd';
 import axios from 'axios';
 import { produce } from 'immer';
 import update from 'immutability-helper';
 import { cloneDeep } from 'lodash';
 import { DropTargetMonitor, useDrop } from 'react-dnd';
 import { Position, ResizableDelta } from 'react-rnd';
+import { useParams } from 'react-router-dom';
 
+import {
+  useCreateComponentMutation,
+  useDeleteComponentMutation,
+  useFetchComponentsQuery,
+  useUpdateComponentsMutation
+} from '../../../shared/apis/componentApi';
 import { Box, DraggableBoxPropsType } from '../../interfaces/container.interface';
 import { Direction, DraggableData } from '../../interfaces/editor.interface';
+import { getCookie } from '../../utils/authUtils';
 import { DraggableBox } from '../DraggableBox/dragglebox.component';
 import { componentTypes } from '../Editor/WidgetManager/widgetsComponents';
-import { getCookie } from '../../utils/authUtils';
-import { useParams } from 'react-router-dom';
 
 const NO_OF_GRIDS = 43;
 
 const Container: React.FC<{ canvasWidth: number }> = ({ canvasWidth }) => {
-  const [boxes, setBoxes] = useState<{ [id: string]: Box}>({});
-  useEffect(() => console.log('boxes: ', boxes), [boxes]);
+  // const [boxes, setBoxes] = useState<{ [id: string]: Box }>({});
+  // useEffect(() => console.log('boxes: ', boxes), [boxes]);
   const canvasRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
   const gridWidth = Number(canvasWidth) / NO_OF_GRIDS;
-  const { id } = useParams()
+  const { id } = useParams();
+  const [updateComponents, { isLoading: isUpdateComponentLoading }] = useUpdateComponentsMutation();
+  const [createComponent, { isLoading: isCreateComponentLoading }] = useCreateComponentMutation();
+  const [deleteComponentMutation, { isLoading: isDeleteComponentLoading }] =
+    useDeleteComponentMutation();
 
-  useEffect(() => {
-    const token = getCookie("accessToken");
-    let config = {
-      method: 'get',
-      maxBodyLength: Infinity,
-      url: `http://localhost:3000/components/${id}`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization:
-          `Bearer ${token}`
-      }
-    };
+  const {
+    data: boxes = {},
+    isLoading,
+    isFetching,
+    isError,
+    error,
+    isSuccess
+  } = useFetchComponentsQuery(id);
 
-    axios
-      .request(config)
-      .then((response) => {
-        console.log('xyz: ', response.data);
-        for(const data of response.data) {
-          setBoxes((prevState) => {
-            return produce(prevState, (draft) => {
-              draft[data.id] = data;
-            });
-          });
-        }
-      })
-      .catch((error) => {
-        console.log(error)
-      });
-  }, []);
+  // useEffect(() => setBoxes(data), [data]);
 
   const defaultData: { top: number; left: number; width: number; height: number } = {
     top: 100,
@@ -97,42 +90,16 @@ const Container: React.FC<{ canvasWidth: number }> = ({ canvasWidth }) => {
       // Computing the top offset
       const topDiff = boxes[componentId]?.top - (nodeBounds.y - canvasBounds.y);
 
-      let newBoxes = { ...boxes };
-
-      const token = getCookie("accessToken");
-      let config = {
-        method: 'patch',
-        maxBodyLength: Infinity,
-        url: `http://localhost:3000/components/${id}/${componentId}`,
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization:
-            `Bearer ${token}`
+      updateComponents({
+        id,
+        componentId,
+        data: {
+          top: boxes[componentId].top - topDiff,
+          left: boxes[componentId].left - leftDiff
         }
-      };
-  
-      axios
-        .request(config)
-        .then((response) => {
-          newBoxes = produce(newBoxes, (draft: any) => {
-            if (draft[componentId]) {
-              const topOffset = draft[componentId].top;
-              const leftOffset = draft[componentId].left;
-    
-              draft[componentId].top = topOffset - topDiff;
-              draft[componentId].left = leftOffset - leftDiff;
-            }
-          });
-    
-          setBoxes(newBoxes);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-
-      
+      });
     },
-    [boxes, setBoxes]
+    [boxes]
   );
 
   const onResizeStop = useCallback(
@@ -168,47 +135,26 @@ const Container: React.FC<{ canvasWidth: number }> = ({ canvasWidth }) => {
       let newWidth = boxWidth + deltaWidth;
 
       boxHeight = boxHeight + deltaHeight;
-      if (boxHeight < boxes[componentId].defaultSize.height) boxHeight = boxes[componentId].defaultSize.height;
-      if (newWidth < boxes[componentId].defaultSize.width) newWidth = boxes[componentId].defaultSize.width;
+      if (boxHeight < boxes[componentId].defaultSize.height)
+        boxHeight = boxes[componentId].defaultSize.height;
+      if (newWidth < boxes[componentId].defaultSize.width)
+        newWidth = boxes[componentId].defaultSize.width;
 
       boxTop = y;
       boxLeft = (x * 100) / canvasWidth;
 
-      const token = getCookie("accessToken");
-      let config = {
-        method: 'patch',
-        maxBodyLength: Infinity,
-        url: `http://localhost:3000/components/${id}/${componentId}`,
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization:
-            `Bearer ${token}`
+      updateComponents({
+        id,
+        componentId,
+        data: {
+          top: boxTop,
+          left: boxLeft,
+          width: newWidth,
+          height: boxHeight
         }
-      };
-  
-      axios
-        .request(config)
-        .then((response) => {
-          let newBoxes = {
-            ...boxes,
-            [componentId]: {
-              ...boxes[componentId],
-              width: newWidth,
-              height: boxHeight,
-              left: boxLeft,
-              top: boxTop
-            }
-          };
-    
-          setBoxes(newBoxes);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-
-      
+      });
     },
-    [setBoxes, boxes, gridWidth]
+    [boxes, gridWidth]
   );
 
   function computeComponentName(componentType: string, currentComponents: { [id: string]: Box }) {
@@ -301,70 +247,36 @@ const Container: React.FC<{ canvasWidth: number }> = ({ canvasWidth }) => {
           canvasBoundingRect
         );
 
-        const token = getCookie("accessToken")
-        let config = {
-          method: 'post',
-          maxBodyLength: Infinity,
-          url: `http://localhost:3000/components/${id}`,
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization:
-              `Bearer ${token}`
-          },
+        createComponent({
+          id,
           data: newComponent
-        };
-
-        axios
-          .request(config)
-          .then((response) => {
-            console.log('created: ', response.data);
-            const newBoxes = {
-              ...boxes,
-              [response?.data?.id]: {
-                ...response?.data
-              }
-            };
-            setBoxes(newBoxes);
-          })
-          .catch((error) => {
-            console.log('err: ', error);
-          });
-
-        return undefined;
+        });
       }
     }),
     [moveBox]
   );
 
-  function deleteComponent(componentId: string) {
-    const token = getCookie("accessToken");
-    let config = {
-      method: 'delete',
-      maxBodyLength: Infinity,
-      url: `http://localhost:3000/components/${id}/${componentId}`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization:
-          `Bearer ${token}`
-      }
-    };
+  const isOverlayVisible =
+    isLoading ||
+    isFetching ||
+    isUpdateComponentLoading ||
+    isCreateComponentLoading ||
+    isDeleteComponentLoading;
 
-    axios
-      .request(config)
-      .then((response) => {
-        if (response.data.msg === 'Component Deleted Successfully') {
-          setBoxes(update(boxes, {
-            $unset: [componentId],
-          }));
-        }
-      })
-      .catch((error) => {
-        console.log('err: ', error);
-      });
+  function deleteComponent(componentId: string) {
+    deleteComponentMutation({
+      id,
+      componentId
+    });
   }
 
   return (
-    <>
+    <div className="relative w-full h-full">
+      {isOverlayVisible && (
+        <div className="absolute top-0 left-0 w-full h-full z-20 !bg-secondary p-10 flex items-center justify-center">
+          <Spin indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />} />
+        </div>
+      )}
       <div
         id="real-canvas"
         className="flex items-center real-canvas relative h-full w-full bg-secondary"
@@ -395,7 +307,7 @@ const Container: React.FC<{ canvasWidth: number }> = ({ canvasWidth }) => {
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 };
 

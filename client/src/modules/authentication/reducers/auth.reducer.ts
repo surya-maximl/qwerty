@@ -26,6 +26,11 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addMatcher(authApi.endpoints.fetchUserDetails.matchFulfilled, (state, action) => {
+        state.user = action.payload;
+        setCookie('accessToken', action.payload.token);
+        state.loggedIn = true;
+      })
       .addMatcher(authApi.endpoints.login.matchFulfilled, (state, action) => {
         state.user = action.payload;
         setCookie('accessToken', action.payload.token);

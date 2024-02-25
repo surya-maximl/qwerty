@@ -1,6 +1,9 @@
+import { useEffect } from 'react';
+import { App, message } from 'antd';
 import { Navigate, Outlet } from 'react-router-dom';
 
 import AuthPageLayout from '../../authentication/components/AuthPageLayout/AuthPageLayout.componet';
+import { useFetchUserDetailsQuery } from '../apis/authApi';
 import { useAuth } from '../hooks/useAuth';
 
 type ProtectedRoutesProps = {
@@ -9,8 +12,14 @@ type ProtectedRoutesProps = {
 
 export function ProtectedRoutes({ isAuthRoute = false }: ProtectedRoutesProps): JSX.Element {
   const { loggedIn } = useAuth();
+  const { message } = App.useApp();
+  const { isError, error } = useFetchUserDetailsQuery();
 
-  console.log('isLofasdfadf', loggedIn);
+  useEffect(() => {
+    if (isError) {
+      message.error(error.data.message);
+    }
+  }, [isError, error]);
 
   if (isAuthRoute) {
     return !loggedIn ? (

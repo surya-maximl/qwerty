@@ -21,6 +21,14 @@ type invitationForm = {
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
+    fetchUserDetails: build.query<User, void>({
+      query: () => {
+        return {
+          url: 'auth',
+          method: 'GET'
+        };
+      }
+    }),
     login: build.mutation<User, loginForm>({
       query: (credentials) => {
         return {
@@ -54,4 +62,9 @@ export const authApi = baseApi.injectEndpoints({
   })
 });
 
-export const { useLoginMutation, useSignupMutation, useHandleInvitationMutation } = authApi;
+export const {
+  useLoginMutation,
+  useSignupMutation,
+  useHandleInvitationMutation,
+  useFetchUserDetailsQuery
+} = authApi;

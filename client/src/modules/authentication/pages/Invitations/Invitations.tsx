@@ -5,10 +5,9 @@ import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { useHandleInvitationMutation } from '../../../shared/apis/authApi';
-import { login } from '../../reducers';
 import { useAppDispatch } from '../../shared/hooks/useAppDispatch';
 
-const { Title, Paragraph } = Typography;
+const { Title } = Typography;
 
 const Invitations: React.FC = () => {
   const { invitationId } = useParams();
@@ -17,18 +16,15 @@ const Invitations: React.FC = () => {
   const { message } = App.useApp();
   const values = Form.useWatch([], form);
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
   const [handleInvitation, { isLoading, isError, error }] = useHandleInvitationMutation();
 
   const handleRedirect = async (values: any) => {
     handleInvitation({
       companyName: values.companyName,
       phoneNumber: values.phoneNumber,
-      token: invitationId
+      userId: invitationId
     });
   };
-
-  // TODO
 
   useEffect(() => {
     form
@@ -48,9 +44,6 @@ const Invitations: React.FC = () => {
       <Flex vertical className="gap-2">
         <Flex vertical>
           <Title className="scroll-m-20 !text-3xl !font-semibold tracking-tight">Add Details</Title>
-          {/* <Paragraph className="text-secondary font-normal">
-            Add Details <Link to="../signup">Create an account</Link>
-          </Paragraph> */}
         </Flex>
         <Flex vertical>
           <Form layout="vertical" form={form} onFinish={handleRedirect}>

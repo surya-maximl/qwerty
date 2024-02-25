@@ -59,10 +59,3 @@ export const appApi = baseApi.injectEndpoints({
 });
 
 export const { useGetAllAppsQuery, useCreateAppMutation, useRenameAppMutation } = appApi;
-
-// const [createApp, { isLoading: isCreationLoading }] = useCreateAppMutation();
-
-// function handleCreateApp() {
-//   createApp(newAppName);
-//   setOpen(false);
-// }

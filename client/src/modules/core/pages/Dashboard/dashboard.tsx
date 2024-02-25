@@ -18,11 +18,8 @@ import DashboardHeader from '../../components/Dashboard/DashboardHeader.componen
 import LeftPanel from '../../components/Editor/LeftPanel.component';
 import Modal from '../../components/Modal/Modal.component';
 import UserInfoModal from '../../components/Modal/UserInfoModal.component';
-import RenderIcon from '../../components/RenderIcon/RenderIcon.component';
-import { appEvents } from '../../constants/dashboard.constants';
 import AppCard from '../../components/AppCard/AppCard.component';
 
-const { Content } = Layout;
 const { Title, Paragraph } = Typography;
 
 const Dashboard = () => {
@@ -31,7 +28,6 @@ const Dashboard = () => {
   const [clickedId, setClickedId] = useState();
   const [refresh, setRefresh] = useState(false);
   const [method, setMethod] = useState('');
-  const [token, setToken] = useState('');
   const { message } = App.useApp();
   const [createNewApp] = useCreateAppMutation();
   const [renameAppMutation] = useRenameAppMutation();
@@ -46,8 +42,6 @@ const Dashboard = () => {
     setNewAppName('');
     setOpen(false);
   };
-
-  const { user } = useAuth();
 
   const renameApp = (id: string) => {
     renameAppMutation({
