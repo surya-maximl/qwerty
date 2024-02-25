@@ -54,7 +54,7 @@ export class AuthService {
 
     console.log(token);
 
-    return this.emailService.sendWelcomeEmail(newUser.email, newUser.name, token);
+    return this.emailService.sendWelcomeEmail(newUser.email, newUser.name, newUser.id, token);
 
   }
 
@@ -66,10 +66,9 @@ export class AuthService {
       id: user.id
     }, process.env.JWT_TOKEN, {
       expiresIn: 360000
-    })
-
+    });
     if (!user.validated) {
-      await this.emailService.sendWelcomeEmail(email, user.name, token);
+      await this.emailService.sendWelcomeEmail(email, user.name, user.id, token);
       return {
         msg: "Setup Account",
         emailSent: true
@@ -80,8 +79,6 @@ export class AuthService {
     const hash = (await scrypt(password, salt, 32)) as Buffer;
     if (storedHash !== hash.toString('hex')) throw new BadRequestException("Password or email do not match")
 
-
-
     return {
       username: user.name,
       id: user.id,
@@ -91,12 +88,13 @@ export class AuthService {
   }
 
 
-  async setUpAccount({ company, phone, token }: any) {
-    const userToken = await jwt.decode(token) as jwtPayload;
+  async setUpAccount({ company, phone, userId, token }: any) {
+    // const userToken = await jwt.decode(token) as jwtPayload;
     // console.log(typeof userToken)
-    console.log(userToken, company, phone);
-    const findUser = await this.user.findOne({ where: { id: userToken?.id } })
+    // console.log(userToken, company, phone);
+    const findUser = await this.user.findOne({ where: { id: userId } })
     if (!findUser) throw new NotFoundException("User Not Found. Please register");
+    if (findUser.validated) throw new BadRequestException("User Already Registered. Please Login");
     findUser.validated = true;
     findUser.company = company;
     findUser.phoneNumber = phone;
@@ -125,5 +123,16 @@ export class AuthService {
     const user = await this.user.findOne({ where: { id: userId } })
     if (!user) throw new NotFoundException("User Not Found");
     return user;
+  }
+
+  async userDetails(user: any) {
+    const id = user.id;
+    const findUser = await this.user.findOne({ where: { id } });
+    if (!findUser) throw new NotFoundException();
+    return {
+      email: findUser.email,
+      userName: findUser.email,
+      id: findUser.id,
+    }
   }
 }

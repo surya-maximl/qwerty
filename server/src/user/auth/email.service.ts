@@ -5,13 +5,14 @@ dotenv.config();
 
 
 const generateInviteURL = (
+  userId: string,
   invitationToken: string,
 ) => {
   const host = 'http://localhost:5173';
   const subpath = 'login';
 
-  return `${host}/auth/invitations/${invitationToken}`
-};
+  return `${host}/invitations/${invitationToken}?id=${userId}`
+
 
 export class EmailService {
 
@@ -45,10 +46,12 @@ export class EmailService {
   async sendWelcomeEmail(
     to: string,
     name: string,
+    userId: string,
     invitationToken: string,
   ) {
     const subject = 'Welcome to AutoApp';
     const inviteUrl = generateInviteURL(
+      userId,
       invitationToken,
     );
     const html = `
