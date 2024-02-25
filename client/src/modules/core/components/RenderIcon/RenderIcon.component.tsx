@@ -15,7 +15,7 @@ const RenderIcon: React.FC<Props> = ({ name }) => {
         {name && icon?.icon}
       </Flex>
     </>
-  )
-}
+  );
+};
 
 export default RenderIcon;

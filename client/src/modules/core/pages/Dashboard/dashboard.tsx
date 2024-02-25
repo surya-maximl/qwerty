@@ -1,28 +1,35 @@
 import { useEffect, useState } from 'react';
-import { Button, Dropdown, Flex, Image, Input, Layout, Typography } from 'antd';
+import { App, Button, Card, Dropdown, Flex, Input, Layout, Skeleton, Typography } from 'antd';
 import axios from 'axios';
 import Fuse from 'fuse.js';
 import { IoMdAdd } from 'react-icons/io';
 import { MdDelete, MdDriveFileRenameOutline, MdOutlineChangeCircle } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 
-import dashboardImage from '../../../../assets/dashboard.svg';
-import AppCard from '../../components/AppCard/AppCard.component';
-import DashboardHeader from '../../components/Dashboard/DashboardHeader.component';
+import {
+  useCreateAppMutation,
+  useGetAllAppsQuery,
+  useRenameAppMutation
+} from '../../../shared/apis/appApi';
+import { useAuth } from '../../../shared/hooks/useAuth';
 import LeftPanel from '../../components/Editor/LeftPanel.component';
 import Modal from '../../components/Modal/Modal.component';
-import { appType } from '../../interfaces/dashboard.interface';
-import { getCookie } from '../../utils/authUtils';
-import UserInfoModal from '../../components/Modal/UserInfoModal.component';
+import RenderIcon from '../../components/RenderIcon/RenderIcon.component';
+import { items } from '../../constants/dashboard.constants';
+
+const { Content } = Layout;
+const { Title, Paragraph } = Typography;
 
 const Dashboard = () => {
   const [open, setOpen] = useState(false);
   const [newAppName, setNewAppName] = useState('');
-  const [apps, setApps] = useState<appType[]>([]);
   const [clickedId, setClickedId] = useState();
   const [refresh, setRefresh] = useState(false);
   const [method, setMethod] = useState('');
   const [token, setToken] = useState('');
+  const { message } = App.useApp();
+  const [createNewApp] = useCreateAppMutation();
+  const [renameAppMutation] = useRenameAppMutation();
   const [filteredApps, setFilteredApps] = useState<appType[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [userInfoOpen, setUserInfoOpen] = useState(false);
@@ -30,68 +37,20 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   const handleCreateApp = async () => {
-    const data = {
-      name: newAppName
-    };
-    const headers = {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`
-    };
-    try {
-      const res = await axios.post('http://localhost:3000/apps', data, { headers });
-      setNewAppName('');
-      setRefresh((prev) => !prev);
-      setOpen(false);
-    } catch (err) {
-      console.log(err);
-    }
+    createNewApp(newAppName);
+    setNewAppName('');
+    setOpen(false);
   };
 
-  const fetchAllApps = async () => {
-    let config = {
-      method: 'get',
-      maxBodyLength: Infinity,
-      url: 'http://localhost:3000/apps',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-      }
-    };
+  const { user } = useAuth();
 
-    try {
-      const res = await axios.request(config);
-      setApps(res.data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  useEffect(() => {
-    setToken(getCookie('accessToken'));
-  }, []);
-
-  useEffect(() => {
-    if (token !== '') {
-      fetchAllApps();
-    }
-  }, [refresh, token]);
-
-  const renameApp = async (id: string) => {
-    let data = { name: newAppName };
-    const headers = {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`
-    };
-
-    try {
-      const res = await axios.patch(`http://localhost:3000/apps/${id}`, data, { headers });
-      setRefresh((prev) => !prev);
-      setNewAppName('');
-      setOpen(false);
-      setSearchQuery('');
-    } catch (err) {
-      console.log(err);
-    }
+  const renameApp = (id: string) => {
+    renameAppMutation({
+      appId: id,
+      appName: newAppName
+    });
+    setOpen(false);
+    setNewAppName('');
   };
 
   const changeIcon = async (id: string) => {
@@ -136,6 +95,7 @@ const Dashboard = () => {
     setSearchQuery('');
     setOpen(true);
   };
+  
   const handleDropdownClick = (e: any, id: string) => {
     if (e.key === '1') {
       handleAppEvents('renameApp', id);
@@ -145,6 +105,14 @@ const Dashboard = () => {
       deleteApp(id);
     }
   };
+
+  const { data: apps = [], isLoading, isFetching, isError, error } = useGetAllAppsQuery();
+
+  useEffect(() => {
+    if (isError) {
+      message.error(error.data.message);
+    }
+  }, [isError, error]);
 
   const handleSearchQueryChange = (e: any) => {
     const { value } = e.target;
@@ -224,14 +192,13 @@ const Dashboard = () => {
         id={clickedId}
         method={method}
       />
-      <Layout>
-        <LeftPanel />
-        <Layout>
-        <DashboardHeader setOpen={setUserInfoOpen} open={userInfoOpen}/>
-          <Content>
-            <Flex className="h-full " vertical flex={4}>
-              <Flex flex={1} justify="center" className="p-10">
-                <Button
+      <DashboardHeader setOpen={setUserInfoOpen} open={userInfoOpen}/>
+      <Content>
+        <Flex vertical className="h-full" gap="large">
+          <Flex justify="center" className="p-4 py-8 gap-4">
+            <Card className="border-border shadow-sm">
+              <Flex align="center" justify="center" gap="middle">
+                 <Button
                   type="primary"
                   size="large"
                   className="mr-4 flex items-center"
@@ -255,37 +222,75 @@ const Dashboard = () => {
                   />
                 </Dropdown>
               </Flex>
-              <Flex className="gap-[4%] px-[4%]" flex={5} wrap="wrap">
-                {apps.length === 0 && (
-                  <Flex justify="center" className="w-full h-[80%]">
-                    <Flex align="flex-end" justify="center" vertical className="w-full" flex={1}>
-                      <h1 className="text-primary text-4xl">Welcome to your new Workspace!</h1>
-                      <p className="text-xl">You can get started by creating a new application</p>
-                      <Button className="mt-10 flex items-center" type="primary" size="large">
-                        <IoMdAdd className="text-xl mr-1" />
-                        Create New App
-                      </Button>
-                    </Flex>
-                    <Flex flex={1} justify="center" align="center" className="hidden lg:block">
-                      <Image
-                        width={500}
-                        src={dashboardImage}
-                        preview={false}
-                        alt="Create app image"
-                        className="mt-6"
-                      />
-                    </Flex>
-                  </Flex>
-                )}
-                {apps.length !== 0 &&
-                  apps.map((item) => {
-                    return <AppCard item={item} handleDropdownClick={handleDropdownClick} />;
-                  })}
+            </Card>
+          </Flex>
+
+          <Flex vertical className="p-4 md:px-20 w-full">
+            {isLoading && isFetching ? (
+              <Flex className="w-full grid grid-cols-2 sm:grid-cols-4 gap-10">
+                <Skeleton.Button active className="!w-full !h-32" />
+                <Skeleton.Button active className="!w-full !h-32" />
+                <Skeleton.Button active className="!w-full !h-32" />
+                <Skeleton.Button active className="!w-full !h-32" />
+                <Skeleton.Button active className="!w-full !h-32" />
               </Flex>
-            </Flex>
-          </Content>
-        </Layout>
-      </Layout>
+            ) : apps.length === 0 ? (
+              <Card className="shadow-sm border-border py-10">
+                <Flex vertical align="center" justify="center" className="w-full">
+                  <Title className="!font-extrabold tracking-tight">
+                    Welcome to your new Workspace!
+                  </Title>
+                  <Paragraph className="text-xl text-secondary">
+                    You can get started by creating a new application
+                  </Paragraph>
+                  <Button type="primary" icon={<IoMdAdd />} className="mt-4">
+                    Create New App
+                  </Button>
+                </Flex>
+              </Card>
+            ) : (
+              <Flex className="w-full grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
+                {apps.map((item) => (
+                  <Card key={item?.id} className="border-border shadow-sm shrink-0">
+                    <Flex vertical className="gap-8">
+                      <Flex justify="space-between" align="center" className="w-full">
+                        <Flex className="h-6 w-6 rounded-md bg-secondary/40">
+                          {/* TODO: Some error in this component */}
+                          <RenderIcon name={item.icon} />
+                        </Flex>
+                        <Dropdown
+                          menu={{ onClick: (e) => handleDropdownClick(e, item?.id), items }}
+                          placement="bottomLeft"
+                          arrow
+                          trigger={['click']}
+                        >
+                          <Button
+                            icon={<TbDotsVertical className="text-lg mt-[1.5px] ml-[0.5px]" />}
+                          />
+                        </Dropdown>
+                      </Flex>
+                      <Flex justify="space-between" align="center">
+                        <Typography.Text className="text-lg font-semibold">
+                          {item?.name}
+                        </Typography.Text>
+                        <Button
+                          type="primary"
+                          className="px-6"
+                          icon={<FaRegEdit />}
+                          onClick={() => navigate(`/app/editor/${item?.id}`)}
+                        >
+                          Edit
+                        </Button>
+                      </Flex>
+                    </Flex>
+                  </Card>
+                ))}
+              </Flex>
+            )}
+          </Flex>
+        </Flex>
+      </Content>
+
     </Layout>
   );
 };
