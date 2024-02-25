@@ -1,31 +1,47 @@
-import { RouteObject } from 'react-router-dom';
+import { lazy } from 'react';
+import { Navigate, RouteObject } from 'react-router-dom';
 
 import { ProtectedRoutes } from '../shared/components/protected-routes.component';
 import { RootError } from '../shared/components/route-error';
-import Login from './pages/Login/Login';
-import Signup from './pages/Signup/Signup';
-import Confirmation from './pages/Confirmation/Confirmation';
+import SuspenseLoader from './components/SuspenseLoader/SuspenseLoader.component';
+
+const Login = lazy(() => import('./pages/Login/Login'));
+const Signup = lazy(() => import('./pages/Signup/Signup'));
+const Invitations = lazy(() => import('./pages/Invitations/Invitations'));
 
 export const AuthRoutes: RouteObject[] = [
   {
     path: 'auth',
-    element: <ProtectedRoutes />,
+    element: <ProtectedRoutes isAuthRoute={true} />,
     errorElement: <RootError />,
     children: [
       {
+        index: true,
+        element: <Navigate to="login" />
+      },
+      {
         path: 'login',
-        element: <Login />,
-        errorElement: <RootError />
+        element: (
+          <SuspenseLoader>
+            <Login />
+          </SuspenseLoader>
+        )
       },
       {
         path: 'signup',
-        element: <Signup />,
-        errorElement: <RootError />
+        element: (
+          <SuspenseLoader>
+            <Signup />
+          </SuspenseLoader>
+        )
       },
       {
         path: 'invitations/:invitationId',
-        element: <Confirmation />,
-        errorElement: <RootError />
+        element: (
+          <SuspenseLoader>
+            <Invitations />
+          </SuspenseLoader>
+        )
       }
     ]
   }

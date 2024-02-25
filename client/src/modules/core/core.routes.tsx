@@ -1,5 +1,6 @@
 import { RouteObject } from 'react-router-dom';
 
+import SuspenseLoader from '../authentication/components/SuspenseLoader/SuspenseLoader.component';
 import { ProtectedRoutes } from '../shared/components/protected-routes.component';
 import { RootError } from '../shared/components/route-error';
 import Dashboard from './pages/Dashboard/dashboard';
@@ -17,9 +18,30 @@ export const CoreRoutes: RouteObject[] = [
     element: <ProtectedRoutes />,
     errorElement: <RootError />,
     children: [
-      { path: '', element: <Dashboard /> },
-      { path: ':id', element: <Dashboard /> },
-      { path: 'editor/:id', element: <Editor /> }
+      {
+        path: '',
+        element: (
+          <SuspenseLoader>
+            <Dashboard />
+          </SuspenseLoader>
+        )
+      },
+      {
+        path: ':id',
+        element: (
+          <SuspenseLoader>
+            <Dashboard />
+          </SuspenseLoader>
+        )
+      },
+      {
+        path: 'editor/:id',
+        element: (
+          <SuspenseLoader>
+            <Editor />
+          </SuspenseLoader>
+        )
+      }
     ]
   }
 ];

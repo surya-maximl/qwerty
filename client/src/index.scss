@@ -5,29 +5,14 @@
 @import 'tailwindcss/utilities';
 
 @font-face {
-  font-family: 'Lato';
-  src: url('./assets/fonts/Lato-Regular.ttf') format('truetype');
-}
-@font-face {
-  font-family: 'Lato-Bold';
-  src: url('./assets/fonts/Lato-Bold.ttf') format('truetype');
-  font-style: normal;
-  font-weight: normal;
-}
-@font-face {
-  font-family: 'Lato-Black';
-  src: url('./assets/fonts/Lato-Black.ttf') format('truetype');
-  font-style: normal;
-  font-weight: normal;
-}
-@font-face {
-  font-family: 'Lato-Italic';
-  src: url('./assets/fonts/Lato-Italic.ttf') format('truetype');
-  font-style: normal;
-  font-weight: normal;
+  font-family: 'Geist';
+  src: url('./assets/fonts/GeistVariableVF.woff2') format('woff2 supports variations');
+  src: url('./assets/fonts/GeistVariableVF.woff2') format('woff2-variations');
+  font-weight: 100 1000;
 }
 
 * {
   margin: 0;
-  font-family: 'Lato';
+  box-sizing: border-box;
+  // font-family: 'Lato';
 }

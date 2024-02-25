@@ -1,15 +1,23 @@
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 
+import AuthPageLayout from '../../authentication/components/AuthPageLayout/AuthPageLayout.componet';
 import { useAuth } from '../hooks/useAuth';
 
-export function ProtectedRoutes(): JSX.Element {
-  const { loggedIn } = useAuth();
-  const { pathname } = useLocation();
+type ProtectedRoutesProps = {
+  isAuthRoute?: boolean;
+};
 
-  const isAuthRoute = pathname.split('/')[1] === 'auth';
+export function ProtectedRoutes({ isAuthRoute = false }: ProtectedRoutesProps): JSX.Element {
+  const { loggedIn } = useAuth();
 
   if (isAuthRoute) {
-    return !loggedIn ? <Outlet /> : <Navigate to="/app" replace />;
+    return !loggedIn ? (
+      <AuthPageLayout>
+        <Outlet />
+      </AuthPageLayout>
+    ) : (
+      <Navigate to="/app" replace />
+    );
   } else {
     return loggedIn ? <Outlet /> : <Navigate to="/auth/login" replace />;
   }
