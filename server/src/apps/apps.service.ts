@@ -23,7 +23,6 @@ export class AppsService {
         userId: userId
       }
     })
-    if (!app.length) throw new NotFoundException("No apps found");
     return app
   }
 

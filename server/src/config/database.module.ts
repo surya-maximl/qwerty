@@ -1,23 +1,23 @@
 import { Module } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigService } from '@nestjs/config';
+import { User } from 'src/user/auth/entities/user.entity';
+import { AppEntity } from 'src/apps/entities/apps.entity';
+import { ComponentEntity } from 'src/component/entities/component.entity';
+require('dotenv').config()
+
 
 @Module({
-    imports:[
+    imports: [
         TypeOrmModule.forRootAsync({
-            useFactory:async(configService: ConfigService)=> ({
+            useFactory: async (configService: ConfigService) => ({
                 type: 'postgres',
-                host: "ep-gentle-king-a2bt7a21-pooler.eu-central-1.aws.neon.tech",
-                port: 5432,
-                username: "default",
-                password: "KslXvpunw89D",
-                database: "verceldb",
-                autoLoadEntities:true,
+                url: process.env.NODE_ENV = 'dev' ? process.env.DEV_DATABASE_URL : process.env.PROD_DATABASE_URL,
                 synchronize: true,
-                ssl: true,
+                entities: [User, AppEntity, ComponentEntity]
             }),
-            inject:[ConfigService]
+            inject: [ConfigService]
         })
     ]
 })
-export class DatabaseModule {}
+export class DatabaseModule { }

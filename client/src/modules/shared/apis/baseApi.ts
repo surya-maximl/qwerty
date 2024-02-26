@@ -1,14 +1,23 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
+import { getCookie } from '../../core/utils/authUtils';
+
+const baseQuery = fetchBaseQuery({
+  baseUrl: `${import.meta.env.VITE_BASE_BACKEND_URL}`,
+  prepareHeaders: (headers) => {
+    const token = getCookie('accessToken');
+    if (token) {
+      headers.set('Authorization', `Bearer ${token}`);
+    }
+    return headers;
+  }
+});
+
 const baseApi = createApi({
-  reducerPath: 'api',
-  baseQuery: fetchBaseQuery({ baseUrl: 'https://pokeapi.co/api/v2/' }),
-  endpoints: (builder) => ({
-    pokemonList: builder.query({
-      query: () => '/pokemon'
-    })
-  })
+  reducerPath: 'baseApi',
+  baseQuery,
+  tagTypes: ['Apps', 'User', 'Components'],
+  endpoints: () => ({})
 });
 
 export default baseApi;
-export const { usePokemonListQuery } = baseApi;

@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Flex, Layout } from 'antd';
+import axios from 'axios';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import Container from '../../components/Container/container.component';
 import EditorHeader from '../../components/Editor/EditorHeader.component';
 import LeftPanel from '../../components/Editor/LeftPanel.component';
-import QueryPanel from '../../components/Editor/QueryPanel.components';
 import RightPanel from '../../components/Editor/RightPanel.component';
-import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { getCookie } from '../../utils/authUtils';
 
@@ -33,7 +32,6 @@ const Editor: React.FC = () => {
   const containerProps: { canvasWidth: number } = {
     canvasWidth: canvasWidth
   };
-
   const token = getCookie('accessToken');
   
   const fetchApp = async () => {
@@ -59,7 +57,7 @@ const Editor: React.FC = () => {
     <>
       <Layout className="min-h-screen">
         <DndProvider backend={HTML5Backend}>
-          <LeftPanel />
+          <LeftPanel showProfile />
           <Layout>
             <EditorHeader name={app.name}/>
             <Content>
