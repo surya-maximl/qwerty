@@ -22,7 +22,7 @@ export const AuthRoutes: RouteObject[] = [
       {
         path: 'login',
         element: (
-          <SuspenseLoader>
+          <SuspenseLoader isAuthRoute={true}>
             <Login />
           </SuspenseLoader>
         )
@@ -30,7 +30,7 @@ export const AuthRoutes: RouteObject[] = [
       {
         path: 'signup',
         element: (
-          <SuspenseLoader>
+          <SuspenseLoader isAuthRoute={true}>
             <Signup />
           </SuspenseLoader>
         )
@@ -38,7 +38,7 @@ export const AuthRoutes: RouteObject[] = [
       {
         path: 'invitations/:invitationId',
         element: (
-          <SuspenseLoader>
+          <SuspenseLoader isAuthRoute={true}>
             <Invitations />
           </SuspenseLoader>
         )

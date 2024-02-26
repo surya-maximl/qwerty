@@ -17,20 +17,20 @@ const UserInfoModal: React.FC<{ open: boolean; setOpen: (state: boolean) => void
       <Flex>
         <Flex flex={1} justify="center" align="center">
           <Avatar
-            className="hover:scale-110 transition ease-in-out delay-100 h-20 w-20 flex justify-center items-center text-2xl font-semibold"
+            className="flex h-20 w-20 items-center justify-center text-2xl font-semibold transition delay-100 ease-in-out hover:scale-110"
             style={{ color: '#f56a00', backgroundColor: '#fde3cf' }}
           >
             {user.username?.substring(0, 1)}
           </Avatar>
         </Flex>
         <Flex flex={1} vertical>
-          <Flex vertical className="border-border border-solid border-0 border-b-[1px] pb-2">
+          <Flex vertical className="border-0 border-b-[1px] border-solid border-border pb-2">
             <Typography.Title level={5} className="!m-0">
               Display Name
             </Typography.Title>
             <Typography.Paragraph className="!m-0">{user.username}</Typography.Paragraph>
           </Flex>
-          <Flex vertical className="border-border border-solid border-0 border-b-[1px] pt-4 pb-2">
+          <Flex vertical className="border-0 border-b-[1px] border-solid border-border pb-2 pt-4">
             <Typography.Title level={5} className="!m-0">
               Email Address
             </Typography.Title>

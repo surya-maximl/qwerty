@@ -13,21 +13,23 @@ const Signup: React.FC = () => {
   const [form] = Form.useForm();
   const values = Form.useWatch([], form);
   const { message } = App.useApp();
-  const [isLoading, setIsLoading] = useState(false);
-  const [signupMutation, { isError, error }] = useSignupMutation();
+  const [signupMutation, { isLoading }] = useSignupMutation();
 
   function handleSignup(values: any) {
-    setIsLoading(true);
     signupMutation({
-      ...values,
-      phone: '1234567890'
+      ...values
     })
       .unwrap()
-      .then(() => {})
-      .finally(() => {
+      .then(() => {
         message.success('Please check your mail');
-        setIsLoading(false);
         navigate('../login');
+      })
+      .catch((error) => {
+        if (error) {
+          if ('data' in error) {
+            message.error(error.data.message || 'An error occurred');
+          }
+        }
       });
   }
 
@@ -38,20 +40,14 @@ const Signup: React.FC = () => {
       .catch(() => setIsFormSubmittable(false));
   }, [form, values]);
 
-  useEffect(() => {
-    if (isError) {
-      message.error(error?.data?.message || 'An error occurred');
-    }
-  }, [isError, error]);
-
   return (
-    <Card className="mt-16 shadow-sm w-full max-w-sm border-border">
+    <Card className="mt-16 w-full max-w-sm border-border shadow-sm">
       <Flex vertical className="gap-2">
         <Flex vertical>
           <Title className="scroll-m-20 !text-3xl !font-semibold tracking-tight">
             Join Innojet
           </Title>
-          <Paragraph className="text-secondary font-normal">
+          <Paragraph className="font-normal text-mutedForeground">
             Already have an account? <Link to="../login">Sign in</Link>
           </Paragraph>
         </Flex>
@@ -104,7 +100,7 @@ const Signup: React.FC = () => {
                 htmlType="submit"
                 type="primary"
                 size="large"
-                className="w-full"
+                className="mt-1 w-full"
                 loading={isLoading}
                 disabled={!isFormSubmittable}
               >

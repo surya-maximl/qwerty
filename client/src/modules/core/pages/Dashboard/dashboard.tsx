@@ -128,31 +128,31 @@ const Dashboard = () => {
           return {
             key: item.id,
             label: (
-              <Flex align="center" className="cursor-default">
-                <Flex flex={10} onClick={() => navigate(`/app/editor/${item.id}`)}>
-                  <Typography className="text-md font-semibold text-primary">
+              <Flex align="center" justify="space-between" className="cursor-default">
+                <Flex className="cursor-pointer" onClick={() => navigate(`/app/editor/${item.id}`)}>
+                  <Paragraph className="text-md !m-0 font-semibold text-foreground/80">
                     {item?.name}
-                  </Typography>
+                  </Paragraph>
                 </Flex>
-                <Flex gap={10} flex={1}>
-                  <Typography
-                    className="p-0 text-xl font-semibold text-primary cursor-pointer hover:text-black"
+                <Flex align="center" className="gap-3">
+                  <Flex
+                    className="cursor-pointer p-0 text-xl font-semibold text-mutedForeground hover:text-foreground"
                     onClick={() => handleAppEvents('renameApp', item.id)}
                   >
                     <MdDriveFileRenameOutline />
-                  </Typography>
-                  <Typography
-                    className="p-0 text-xl font-semibold text-primary cursor-pointer hover:text-black"
+                  </Flex>
+                  <Flex
+                    className="cursor-pointer p-0 text-xl font-semibold text-mutedForeground hover:text-foreground"
                     onClick={() => handleAppEvents('changeIcon', item.id)}
                   >
                     <MdOutlineChangeCircle />
-                  </Typography>
-                  <Typography
-                    className="p-0 text-xl font-semibold text-[#ff7875] cursor-pointer hover:text-[#f5222d]"
+                  </Flex>
+                  <Flex
+                    className="cursor-pointer p-0 text-xl font-semibold text-[#ff7875] hover:text-[#f5222d]"
                     onClick={() => deleteApp(item.id)}
                   >
                     <MdDelete />
-                  </Typography>
+                  </Flex>
                 </Flex>
               </Flex>
             )
@@ -162,7 +162,9 @@ const Dashboard = () => {
           {
             key: '1',
             label: (
-              <Typography className="text-md text-primary">No apps match your search!</Typography>
+              <Paragraph className="text-md text-md !m-0 font-semibold text-mutedForeground">
+                No apps match your search!
+              </Paragraph>
             ),
             disabled: true
           }
@@ -187,46 +189,45 @@ const Dashboard = () => {
       />
       <LeftPanel />
       <Layout>
-        <DashboardHeader setOpen={setUserInfoOpen} open={userInfoOpen} />
-        <Content>
+        <DashboardHeader setOpen={setUserInfoOpen} />
+        <Content className="bg-background/5">
           <Flex vertical className="h-full" gap="large">
-            <Flex justify="center" className="p-4 py-8 gap-4">
+            <Flex align="center" justify="center" className="gap-5 p-4 py-8">
               <Button
                 type="primary"
+                className="flex items-center gap-1"
                 size="large"
-                className="mr-4 flex items-center"
                 onClick={() => {
                   setMethod('createApp');
                   setOpen(true);
                 }}
               >
-                <IoMdAdd className="text-xl mr-1" />
+                <IoMdAdd className="mb-[1px] text-xl" />
                 Create App
               </Button>
               <Dropdown menu={{ items }} open={searchQuery !== ''}>
                 <Input.Search
-                  placeholder="search apps"
+                  placeholder="Search Apps"
                   allowClear
-                  className="h-fit"
-                  style={{ width: '50%' }}
-                  size="large"
+                  className="w-full max-w-md"
                   value={searchQuery}
+                  size="large"
                   onChange={(e) => handleSearchQueryChange(e)}
                 />
               </Dropdown>
             </Flex>
 
-            <Flex vertical className="p-4 md:px-20 w-full">
+            <Flex vertical className="w-full p-4 md:px-20">
               {isLoading && isFetching ? (
-                <Flex className="w-full grid grid-cols-2 sm:grid-cols-4 gap-10">
-                  <Skeleton.Button active className="!w-full !h-32" />
-                  <Skeleton.Button active className="!w-full !h-32" />
-                  <Skeleton.Button active className="!w-full !h-32" />
-                  <Skeleton.Button active className="!w-full !h-32" />
-                  <Skeleton.Button active className="!w-full !h-32" />
+                <Flex className="grid w-full grid-cols-2 gap-10 sm:grid-cols-4">
+                  <Skeleton.Button active className="!h-32 !w-full" />
+                  <Skeleton.Button active className="!h-32 !w-full" />
+                  <Skeleton.Button active className="!h-32 !w-full" />
+                  <Skeleton.Button active className="!h-32 !w-full" />
+                  <Skeleton.Button active className="!h-32 !w-full" />
                 </Flex>
               ) : apps.length === 0 ? (
-                <Card className="shadow-sm border-border py-10">
+                <Card className="border-border py-10 shadow-sm">
                   <Flex vertical align="center" justify="center" className="w-full">
                     <Title className="!font-extrabold tracking-tight">
                       Welcome to your new Workspace!
@@ -248,7 +249,7 @@ const Dashboard = () => {
                   </Flex>
                 </Card>
               ) : (
-                <Flex className="w-full grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
+                <Flex className="grid w-full grid-cols-1 gap-10 xs:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {apps.map((item) => (
                     <AppCard
                       key={item.id}

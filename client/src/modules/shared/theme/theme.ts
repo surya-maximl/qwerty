@@ -1,4 +1,4 @@
-import { theme, ThemeConfig } from 'antd';
+import { ThemeConfig } from 'antd';
 
 export const themeConfig: ThemeConfig = {
   // algorithm: theme.darkAlgorithm,

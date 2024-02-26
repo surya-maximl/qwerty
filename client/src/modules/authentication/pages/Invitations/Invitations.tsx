@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { App, Button, Card, Flex, Form, Input, Typography } from 'antd';
-import axios from 'axios';
-import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 
 import { useHandleInvitationMutation } from '../../../shared/apis/authApi';
-import { useAppDispatch } from '../../shared/hooks/useAppDispatch';
 
 const { Title } = Typography;
 
@@ -17,16 +15,28 @@ const Invitations: React.FC = () => {
   const [form] = Form.useForm();
   const { message } = App.useApp();
   const values = Form.useWatch([], form);
-  const navigate = useNavigate();
-  const [handleInvitation, { isLoading, isError, error }] = useHandleInvitationMutation();
+  const [handleInvitation, { isLoading }] = useHandleInvitationMutation();
 
   const handleRedirect = async (values: any) => {
-    handleInvitation({
-      companyName: values.companyName,
-      phoneNumber: values.phoneNumber,
-      userId: id,
-      token: invitationId
-    });
+    if (invitationId) {
+      handleInvitation({
+        companyName: values.companyName,
+        phoneNumber: values.phoneNumber,
+        userId: id,
+        token: invitationId
+      })
+        .unwrap()
+        .then((response) => {
+          message.success(`Logged in as ${response.username}`);
+        })
+        .catch((error) => {
+          if (error) {
+            if ('data' in error) {
+              message.error(error?.data?.message || 'An error occurred');
+            }
+          }
+        });
+    }
   };
 
   useEffect(() => {
@@ -36,14 +46,8 @@ const Invitations: React.FC = () => {
       .catch(() => setIsFormSubmittable(false));
   }, [form, values]);
 
-  useEffect(() => {
-    if (isError) {
-      message.error(error.data.message);
-    }
-  }, [isError, error]);
-
   return (
-    <Card className="mt-16 shadow-sm w-full max-w-sm border-border">
+    <Card className="mt-16 w-full max-w-sm border-border shadow-sm">
       <Flex vertical className="gap-2">
         <Flex vertical>
           <Title className="scroll-m-20 !text-3xl !font-semibold tracking-tight">Add Details</Title>
@@ -54,24 +58,36 @@ const Invitations: React.FC = () => {
               name="companyName"
               label="Company Name"
               className="font-medium"
-              rules={[{ required: true, message: '' }]}
+              rules={[
+                { required: true, message: '' },
+                {
+                  min: 2,
+                  message: 'Company Name must contain atleast 2 characters'
+                }
+              ]}
             >
-              <Input prefix={<UserOutlined />} placeholder="Enter your full name" />
+              <Input prefix={<UserOutlined />} placeholder="Enter company name" />
             </Form.Item>
             <Form.Item
               name="phoneNumber"
               label="Phone Number"
               className="font-medium"
-              rules={[{ required: true, message: 'Please enter your phone number!' }]}
+              rules={[
+                { required: true, message: 'Please enter your phone number' },
+                {
+                  len: 10,
+                  message: 'Phone number must contain 10 digits'
+                }
+              ]}
             >
-              <Input prefix={<LockOutlined />} type="tel" placeholder="Enter phone number" />
+              <Input prefix={<LockOutlined />} placeholder="Enter phone number" />
             </Form.Item>
             <Form.Item>
               <Button
                 htmlType="submit"
                 type="primary"
                 size="large"
-                className="w-full"
+                className="mt-1 w-full"
                 disabled={!isFormSubmittable}
                 loading={isLoading}
               >

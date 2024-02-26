@@ -22,10 +22,10 @@ const LandingPageHeader: React.FC = () => {
   }
 
   return (
-    <Header className="flex items-center w-full">
-      <Flex className="w-full" justify="space-between" align="center">
+    <Header className="bg-background/95 supports-[backdrop-filter]:bg-background/60 flex w-full items-center justify-center border-0 border-b-[1px] border-solid border-border backdrop-blur">
+      <Flex className="container w-full" justify="space-between" align="center">
         <Flex justify="center" align="center">
-          <img src="https://assets-global.website-files.com/6266634263b9179f76b2236e/642ea2f14ccdf8b44f4454dd_ToolJet%20logo.svg" />
+          <img src="/favicon.ico" className="h-9 w-9 rounded-lg" alt="logo" />
         </Flex>
         <Flex className="items-center gap-4">
           {loggedIn ? (
@@ -36,11 +36,11 @@ const LandingPageHeader: React.FC = () => {
             </>
           ) : (
             <>
+              <Button type="dashed" onClick={navigateToSignupPage}>
+                Signup
+              </Button>
               <Button type="primary" onClick={navigateToLoginPage}>
                 Login
-              </Button>
-              <Button type="default" onClick={navigateToSignupPage}>
-                Signup
               </Button>
             </>
           )}

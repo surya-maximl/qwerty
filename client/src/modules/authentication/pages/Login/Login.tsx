@@ -12,10 +12,23 @@ const Login: React.FC = () => {
   const [form] = Form.useForm();
   const { message } = App.useApp();
   const values = Form.useWatch([], form);
-  const [loginMutation, { isLoading, isError, error }] = useLoginMutation();
+  const [loginMutation, { isLoading }] = useLoginMutation();
 
   function handleLogin(values: any) {
-    loginMutation(values);
+    loginMutation(values)
+      .unwrap()
+      .then((response) => {
+        if ('emailSent' in response) {
+          message.info(`Please check your email`);
+        } else message.success(`Logged in as ${response.username}`);
+      })
+      .catch((error) => {
+        if (error) {
+          if ('data' in error) {
+            message.error(error.data.message || 'An error occurred');
+          }
+        }
+      });
   }
 
   useEffect(() => {
@@ -25,18 +38,12 @@ const Login: React.FC = () => {
       .catch(() => setIsFormSubmittable(false));
   }, [form, values]);
 
-  useEffect(() => {
-    if (isError) {
-      message.error(error.data.message);
-    }
-  }, [isError, error]);
-
   return (
-    <Card className="mt-16 shadow-sm w-full max-w-sm border-border">
+    <Card className="mt-16 w-full max-w-sm border-border shadow-sm">
       <Flex vertical className="gap-2">
         <Flex vertical>
           <Title className="scroll-m-20 !text-3xl !font-semibold tracking-tight">Sign in</Title>
-          <Paragraph className="text-secondary font-normal">
+          <Paragraph className="font-normal text-mutedForeground">
             New to InnoJet? <Link to="../signup">Create an account</Link>
           </Paragraph>
         </Flex>
@@ -76,7 +83,7 @@ const Login: React.FC = () => {
                   type="primary"
                   htmlType="submit"
                   size="large"
-                  className="w-full"
+                  className="mt-1 w-full"
                   loading={isLoading}
                   disabled={!isFormSubmittable}
                 >
