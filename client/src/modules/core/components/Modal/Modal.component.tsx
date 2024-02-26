@@ -66,10 +66,10 @@ const AppModal: React.FC = ({
   return (
     <Modal open={open} title={title} onCancel={handleCancel} footer={footer}>
       {method === 'createApp' && (
-        <Input placeholder="Enter new name" onChange={(e) => setNewAppName(e.target.value)} />
+        <Input placeholder="Enter new name" value={newAppName} onChange={(e) => setNewAppName(e.target.value)} />
       )}
       {method === 'renameApp' && (
-        <Input placeholder="Enter name" onChange={(e) => setNewAppName(e.target.value)} />
+        <Input placeholder="Enter name" value={newAppName} onChange={(e) => setNewAppName(e.target.value)} />
       )}
       {method === 'changeIcon' && (
         <>

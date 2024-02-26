@@ -43,10 +43,16 @@ const Dashboard = () => {
       .then(() => {
         setNewAppName('');
         setOpen(false);
-      });
+      }).catch((err) => {
+        message.error(err.data.message);
+      })
   };
 
   const renameApp = (id: string) => {
+    if(newAppName==="") {
+      message.error("Please enter a valid name!");
+      return;
+    }
     renameAppMutation({
       appId: id,
       appName: newAppName
@@ -64,7 +70,6 @@ const Dashboard = () => {
       .unwrap()
       .then(() => {
         setSelectedApp('');
-        setNewAppName('');
         setOpen(false);
       });
   };

@@ -79,7 +79,6 @@ const Container: React.FC<{ canvasWidth: number }> = ({ canvasWidth }) => {
         .getElementsByClassName('real-canvas')[0]
         .getBoundingClientRect();
       const canvasWidth = canvasBounds?.width;
-      console.log('from drag stop:', canvasWidth);
       const nodeBounds = direction.node.getBoundingClientRect();
 
       // Computing the left offset
@@ -89,15 +88,18 @@ const Container: React.FC<{ canvasWidth: number }> = ({ canvasWidth }) => {
 
       // Computing the top offset
       const topDiff = boxes[componentId]?.top - (nodeBounds.y - canvasBounds.y);
-
-      updateComponents({
-        id,
-        componentId,
-        data: {
-          top: boxes[componentId].top - topDiff,
-          left: boxes[componentId].left - leftDiff
-        }
-      });
+      
+      if(topDiff != 0 && leftDiff != 0) {
+        updateComponents({
+          id,
+          componentId,
+          data: {
+            top: boxes[componentId].top - topDiff,
+            left: boxes[componentId].left - leftDiff
+          }
+        });
+      }
+      console.log("From drag stop:");
     },
     [boxes]
   );
