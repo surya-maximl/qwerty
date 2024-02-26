@@ -1,4 +1,4 @@
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode } from 'jwt-decode';
 
 export const getCookie = (name: string) => {
   const cookieString = document.cookie;
@@ -15,14 +15,15 @@ export const getCookie = (name: string) => {
 };
 
 export const setCookie = (name: string, value: string) => {
-  const date = new Date();
-  const decodedToken: any = jwtDecode(value);
-  console.log(decodedToken)
-  date.setTime(date.getTime() + decodedToken.exp);
-  const expires = "expires=" + date.toUTCString();
-  document.cookie = name + "=" + value + ";" + expires + ";path=/";
-}
+  if (value !== null) {
+    const date = new Date();
+    const decodedToken: any = jwtDecode(value);
+    date.setTime(date.getTime() + decodedToken.exp);
+    const expires = 'expires=' + date.toUTCString();
+    document.cookie = name + '=' + value + ';' + expires + ';path=/';
+  }
+};
 
 export const unsetCookie = (name: string) => {
-  document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
-}
+  document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/';
+};

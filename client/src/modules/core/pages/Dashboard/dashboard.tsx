@@ -1,36 +1,36 @@
 import { useEffect, useState } from 'react';
 import { App, Button, Card, Dropdown, Flex, Input, Layout, Skeleton, Typography } from 'antd';
-import axios from 'axios';
 import Fuse from 'fuse.js';
-import { FaRegEdit } from 'react-icons/fa';
 import { IoMdAdd } from 'react-icons/io';
 import { MdDelete, MdDriveFileRenameOutline, MdOutlineChangeCircle } from 'react-icons/md';
-import { TbDotsVertical } from 'react-icons/tb';
 import { useNavigate } from 'react-router-dom';
 
 import {
+  useChangeIconMutation,
   useCreateAppMutation,
+  useDeleteAppMutation,
   useGetAllAppsQuery,
   useRenameAppMutation
 } from '../../../shared/apis/appApi';
-import { useAuth } from '../../../shared/hooks/useAuth';
+import AppCard from '../../components/AppCard/AppCard.component';
 import DashboardHeader from '../../components/Dashboard/DashboardHeader.component';
 import LeftPanel from '../../components/Editor/LeftPanel.component';
 import Modal from '../../components/Modal/Modal.component';
 import UserInfoModal from '../../components/Modal/UserInfoModal.component';
-import AppCard from '../../components/AppCard/AppCard.component';
 
 const { Title, Paragraph } = Typography;
 
 const Dashboard = () => {
   const [open, setOpen] = useState(false);
   const [newAppName, setNewAppName] = useState('');
+  const [selectedApp, setSelectedApp] = useState('');
   const [clickedId, setClickedId] = useState();
-  const [refresh, setRefresh] = useState(false);
   const [method, setMethod] = useState('');
   const { message } = App.useApp();
-  const [createNewApp] = useCreateAppMutation();
-  const [renameAppMutation] = useRenameAppMutation();
+  const [createNewApp, { isLoading: isAppCreating }] = useCreateAppMutation();
+  const [renameAppMutation, { isLoading: isAppRenaming }] = useRenameAppMutation();
+  const [deleteAppMutation] = useDeleteAppMutation();
+  const [changeIconMutation, { isLoading: isIconLoading }] = useChangeIconMutation();
   const [filteredApps, setFilteredApps] = useState<appType[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [userInfoOpen, setUserInfoOpen] = useState(false);
@@ -38,53 +38,44 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   const handleCreateApp = async () => {
-    createNewApp(newAppName);
-    setNewAppName('');
-    setOpen(false);
+    createNewApp(newAppName)
+      .unwrap()
+      .then(() => {
+        setNewAppName('');
+        setOpen(false);
+      });
   };
 
   const renameApp = (id: string) => {
     renameAppMutation({
       appId: id,
       appName: newAppName
-    });
-    setOpen(false);
-    setNewAppName('');
+    })
+      .unwrap()
+      .then(() => {
+        setNewAppName('');
+        setOpen(false);
+      });
   };
 
   const changeIcon = async (id: string) => {
-    let data = {
-      icon: newAppName,
-      id
-    };
-    const headers = {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`
-    };
-
-    try {
-      const res = await axios.put('http://localhost:3000/apps/icon', data, { headers });
-      setRefresh((prev) => !prev);
-      setOpen(false);
-      setSearchQuery('');
-    } catch (err) {
-      console.log(err);
-    }
+    setSelectedApp(id);
+    changeIconMutation({ icon: newAppName, id })
+      .unwrap()
+      .then(() => {
+        setSelectedApp('');
+        setNewAppName('');
+        setOpen(false);
+      });
   };
 
   const deleteApp = async (id: string) => {
-    const headers = {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`
-    };
-
-    try {
-      const res = await axios.delete(`http://localhost:3000/apps/${id}`, { headers });
-      setRefresh((prev) => !prev);
-      setSearchQuery('');
-    } catch (err) {
-      console.log(err);
-    }
+    setSelectedApp(id);
+    deleteAppMutation(id)
+      .unwrap()
+      .then(() => {
+        setSelectedApp('');
+      });
   };
 
   const handleAppEvents = (method: string, id: string) => {
@@ -181,6 +172,9 @@ const Dashboard = () => {
     <Layout className="min-h-screen">
       <UserInfoModal setOpen={setUserInfoOpen} open={userInfoOpen} />
       <Modal
+        isAppCreating={isAppCreating}
+        isAppRenaming={isAppRenaming}
+        isIconLoading={isIconLoading}
         renameApp={renameApp}
         handleCreateApp={handleCreateApp}
         changeIcon={changeIcon}
@@ -191,35 +185,35 @@ const Dashboard = () => {
         id={clickedId}
         method={method}
       />
-        <LeftPanel />
+      <LeftPanel />
       <Layout>
-      <DashboardHeader setOpen={setUserInfoOpen} open={userInfoOpen} />
+        <DashboardHeader setOpen={setUserInfoOpen} open={userInfoOpen} />
         <Content>
           <Flex vertical className="h-full" gap="large">
             <Flex justify="center" className="p-4 py-8 gap-4">
-                  <Button
-                    type="primary"
-                    size="large"
-                    className="mr-4 flex items-center"
-                    onClick={() => {
-                      setMethod('createApp');
-                      setOpen(true);
-                    }}
-                  >
-                    <IoMdAdd className="text-xl mr-1" />
-                    Create App
-                  </Button>
-                  <Dropdown menu={{ items }} open={searchQuery !== ''}>
-                    <Input.Search
-                      placeholder="search apps"
-                      allowClear
-                      className="h-fit"
-                      style={{ width: '50%' }}
-                      size="large"
-                      value={searchQuery}
-                      onChange={(e) => handleSearchQueryChange(e)}
-                    />
-                  </Dropdown>
+              <Button
+                type="primary"
+                size="large"
+                className="mr-4 flex items-center"
+                onClick={() => {
+                  setMethod('createApp');
+                  setOpen(true);
+                }}
+              >
+                <IoMdAdd className="text-xl mr-1" />
+                Create App
+              </Button>
+              <Dropdown menu={{ items }} open={searchQuery !== ''}>
+                <Input.Search
+                  placeholder="search apps"
+                  allowClear
+                  className="h-fit"
+                  style={{ width: '50%' }}
+                  size="large"
+                  value={searchQuery}
+                  onChange={(e) => handleSearchQueryChange(e)}
+                />
+              </Dropdown>
             </Flex>
 
             <Flex vertical className="p-4 md:px-20 w-full">
@@ -256,7 +250,12 @@ const Dashboard = () => {
               ) : (
                 <Flex className="w-full grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
                   {apps.map((item) => (
-                    <AppCard item={item} handleDropdownClick={handleDropdownClick}/>
+                    <AppCard
+                      key={item.id}
+                      item={item}
+                      handleDropdownClick={handleDropdownClick}
+                      selectedApp={selectedApp}
+                    />
                   ))}
                 </Flex>
               )}

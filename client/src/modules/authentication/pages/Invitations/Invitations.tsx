@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { App, Button, Card, Flex, Form, Input, Typography } from 'antd';
 import axios from 'axios';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 import { useHandleInvitationMutation } from '../../../shared/apis/authApi';
 import { useAppDispatch } from '../../shared/hooks/useAppDispatch';
@@ -11,6 +11,8 @@ const { Title } = Typography;
 
 const Invitations: React.FC = () => {
   const { invitationId } = useParams();
+  const location = useLocation();
+  const id = location.search.slice(4);
   const [isFormSubmittable, setIsFormSubmittable] = useState<boolean>(false);
   const [form] = Form.useForm();
   const { message } = App.useApp();
@@ -22,7 +24,8 @@ const Invitations: React.FC = () => {
     handleInvitation({
       companyName: values.companyName,
       phoneNumber: values.phoneNumber,
-      userId: invitationId
+      userId: id,
+      token: invitationId
     });
   };
 
