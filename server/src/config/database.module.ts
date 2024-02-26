@@ -1,20 +1,20 @@
 import { Module } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigService } from '@nestjs/config';
+import { User } from 'src/user/auth/entities/user.entity';
+import { AppEntity } from 'src/apps/entities/apps.entity';
+import { ComponentEntity } from 'src/component/entities/component.entity';
+require('dotenv').config()
+
 
 @Module({
     imports: [
         TypeOrmModule.forRootAsync({
             useFactory: async (configService: ConfigService) => ({
                 type: 'postgres',
-                host: "dpg-cnborled3nmc73ai33l0-a.oregon-postgres.render.com",
-                port: 5432,
-                username: "tooljet_nusq_user",
-                password: "ISIrcjg6p1HbBB5AgZjYnP4VpKjl84DO",
-                database: "tooljet_nusq",
-                autoLoadEntities: true,
+                url: process.env.NODE_ENV = 'dev' ? process.env.DEV_DATABASE_URL : process.env.PROD_DATABASE_URL,
                 synchronize: true,
-                ssl: true,
+                entities: [User, AppEntity, ComponentEntity]
             }),
             inject: [ConfigService]
         })
