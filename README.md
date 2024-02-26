@@ -1,6 +1,6 @@
-# InnoJet
+# AutoApp
 
-The Innojet is a web application that combines an intuitive app builder feature with authentication capabilities to provide users with a seamless experience in creating and managing custom applications without writing any code.
+The AutoApp is a web application that combines an intuitive app builder feature with authentication capabilities to provide users with a seamless experience in creating and managing custom applications without writing any code.
 
 ## Introduction
 
