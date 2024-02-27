@@ -12,15 +12,9 @@ export interface UserSettings {
 export interface User {
   id: string;
   username: string;
-  designation: string;
-  role: string;
-  department: string;
+  phoneNumber: string;
+  company: string;
   email: string;
-  skills: string[];
-  signature: string;
-  city: string;
-  country: string;
-  settings: UserSettings;
   token: string;
 }
 

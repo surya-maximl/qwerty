@@ -1,5 +1,5 @@
-import { HomeOutlined } from '@ant-design/icons';
 import { Flex, Layout, Menu, MenuProps } from 'antd';
+import { TbLayoutDashboard } from 'react-icons/tb';
 import { Link } from 'react-router-dom';
 
 const { Sider } = Layout;
@@ -30,8 +30,8 @@ const items: MenuItem[] = [
   getItem(
     'Dashboard',
     '1',
-    <Link to="/app/dashboard">
-      <HomeOutlined className="text-foreground" />
+    <Link to="/app" className="flex items-center justify-center">
+      <TbLayoutDashboard className=" text-foreground/80" />
     </Link>
   )
 ];
@@ -53,7 +53,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({ showMenu = false }) => {
             />
           </Link>
         </Flex>
-        {showMenu && <Menu mode="inline" inlineCollapsed={true} items={items} />}
+        {showMenu && <Menu mode="inline" items={items} />}
       </Flex>
     </Sider>
   );

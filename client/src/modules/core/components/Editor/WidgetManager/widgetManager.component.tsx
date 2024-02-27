@@ -6,19 +6,16 @@ import { isEmpty } from 'lodash';
 import { capitalizeEveryWord } from '../../../utils/editorUtils';
 import { DraggableBox } from '../../DraggableBox/dragglebox.component';
 import { SearchBox } from '../SearchBox/SearchBox.component';
-import { Props as SearchPropsType } from '../SearchBox/SearchBoxProps.type';
-import { Props as WidgetManagerPropsType } from './widgetManager.type';
+import { componentTypes } from './widgetsComponents';
 
 const { Title } = Typography;
 
-export const WidgetManager: React.FC<WidgetManagerPropsType> = function WidgetManager({
-  componentTypes
-}) {
+export const WidgetManager: React.FC = () => {
   const [filteredComponents, setFilteredComponents] = useState(componentTypes);
   const [searchQuery, setSearchQuery] = useState('');
 
-  function handleSearchQueryChange(e: ChangeEvent<HTMLInputElement>) {
-    const { value } = e.target;
+  function handleSearchQueryChange(event: ChangeEvent<HTMLInputElement>) {
+    const { value } = event.target;
     setSearchQuery(value);
     filterComponents(value);
   }
@@ -33,14 +30,14 @@ export const WidgetManager: React.FC<WidgetManagerPropsType> = function WidgetMa
     }
   }
 
-  function renderList(header: string, items) {
+  function renderList(header: string, items: string[]) {
     if (isEmpty(items)) return null;
     return (
       <Flex vertical gap="middle" className="">
-        <h1 className="text-xs text-slate-600 font-semibold">{capitalizeEveryWord(header)}</h1>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+        <h1 className="text-xs font-semibold text-slate-600">{capitalizeEveryWord(header)}</h1>
+        <div className="grid grid-cols-2 gap-6 md:grid-cols-3">
           {items.map((component, i) => (
-            <DraggableBox key={i} index={i} component={component} />
+            <DraggableBox key={i} component={component} />
           ))}
         </div>
       </Flex>
@@ -64,12 +61,13 @@ export const WidgetManager: React.FC<WidgetManagerPropsType> = function WidgetMa
         </Flex>
       );
     }
+
     const commonSection = { title: 'commonly used', items: [] };
     const layoutsSection = { title: 'layouts', items: [] };
     const formSection = { title: 'forms', items: [] };
     const integrationSection = { title: 'integrations', items: [] };
     const otherSection = { title: 'others', items: [] };
-    const allWidgets: Array<string> = [];
+    const allWidgets: string[] = [];
 
     const commonItems = ['Table', 'Chart', 'Button', 'Text', 'Datepicker'];
     const formItems = [
@@ -120,27 +118,17 @@ export const WidgetManager: React.FC<WidgetManagerPropsType> = function WidgetMa
     }
   }
 
-  const SearchProps: SearchPropsType = {
-    initialValue: '',
-    callBack: (e: ChangeEvent<HTMLInputElement>) => handleSearchQueryChange(e),
-    onClearCallback: () => {
-      setSearchQuery('');
-      filterComponents('');
-    },
-    placeholder: 'Search widgets',
-    showClearButton: false,
-    width: 266
-  };
-
-  const { Title } = Typography;
-
   return (
-    <Flex vertical gap="small" className="w-full p-4 overflow-y-auto">
-      <Title level={3} className="font-bold !text-sm tracking-tight">
-        Components
-      </Title>
-      <SearchBox {...SearchProps} />
-      <div className="p-2">{segregateSections()}</div>
+    <Flex vertical gap="small" className="w-full p-4">
+      <Title className="!text-sm font-bold tracking-tight">Components</Title>
+      <SearchBox
+        callBack={handleSearchQueryChange}
+        onClearCallback={() => {
+          setSearchQuery('');
+          filterComponents('');
+        }}
+      />
+      <Flex className="p-2">{segregateSections()}</Flex>
     </Flex>
   );
 };

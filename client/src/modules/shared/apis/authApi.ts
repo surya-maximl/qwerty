@@ -1,31 +1,31 @@
 import { User } from '../../authentication/interfaces';
 import baseApi from './baseApi';
 
-type loginForm = {
+export type loginForm = {
   email: string;
   password: string;
 };
 
-type signupForm = {
+export type signupForm = {
   email: string;
   password: string;
   name: string;
   phone: string;
 };
 
-type invitationForm = {
-  companyName: string;
+export type invitationForm = {
+  company: string;
   phoneNumber: string;
   userId: string;
   token: string;
 };
 
-type LoginInfo = {
+export type LoginInfo = {
   msg: string;
   emailSent: boolean;
 };
 
-type SignupInfo = {
+export type SignupInfo = {
   msg: Object;
 };
 
@@ -63,12 +63,12 @@ export const authApi = baseApi.injectEndpoints({
       invalidatesTags: ['User']
     }),
     handleInvitation: build.mutation<User, invitationForm>({
-      query: ({ companyName, phoneNumber, userId }) => {
+      query: ({ company, phoneNumber, userId }) => {
         return {
           url: 'auth/setup-account-from-token',
           method: 'POST',
           body: {
-            companyName,
+            company,
             phoneNumber,
             userId
           }

@@ -1,31 +1,31 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState, memo } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { useDrag } from 'react-dnd';
-import { Rnd } from 'react-rnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
-import BoxComponent from './Box.component';
-import { RxButton, RxInput } from "react-icons/rx";
-import { IoTextOutline } from "react-icons/io5";
-import { PiNumberOneFill } from "react-icons/pi";
-import { MdOutlinePassword } from "react-icons/md";
-import { IoIosCheckbox } from "react-icons/io";
-import { IoIosRadioButtonOn } from "react-icons/io";
-import { FaToggleOn } from "react-icons/fa";
-import { BsTextareaResize } from "react-icons/bs";
-import BoxOptions from './BoxOptions.component';
+import { BsTextareaResize } from 'react-icons/bs';
+import { FaToggleOn } from 'react-icons/fa';
+import { IoIosCheckbox, IoIosRadioButtonOn } from 'react-icons/io';
+import { IoTextOutline } from 'react-icons/io5';
+import { MdOutlinePassword } from 'react-icons/md';
+import { PiNumberOneFill } from 'react-icons/pi';
+import { RxButton, RxInput } from 'react-icons/rx';
+import { Rnd } from 'react-rnd';
+
 import { DraggableBoxPropsType } from '../../interfaces/container.interface';
+import BoxComponent from './Box.component';
+import BoxOptions from './BoxOptions.component';
 
 const AllIcons = {
-  "Button": RxButton,
-  "Text": IoTextOutline,
-  "TextInput": RxInput,
-  "NumberInput": PiNumberOneFill ,
-  "PasswordInput": MdOutlinePassword,
-  "Checkbox": IoIosCheckbox ,
-  "RadioButton": IoIosRadioButtonOn ,
-  "ToggleSwitch": FaToggleOn ,
-  "TextArea": BsTextareaResize
-}
+  Button: RxButton,
+  Text: IoTextOutline,
+  TextInput: RxInput,
+  NumberInput: PiNumberOneFill,
+  PasswordInput: MdOutlinePassword,
+  Checkbox: IoIosCheckbox,
+  RadioButton: IoIosRadioButtonOn,
+  ToggleSwitch: FaToggleOn,
+  TextArea: BsTextareaResize
+};
 
 export const DraggableBox = memo<DraggableBoxPropsType>(
   ({
@@ -52,7 +52,7 @@ export const DraggableBox = memo<DraggableBoxPropsType>(
           parent,
           canvasWidth,
           id,
-          component,
+          component
         },
         collect: (monitor) => ({
           isDragging: monitor.isDragging()
@@ -82,47 +82,53 @@ export const DraggableBox = memo<DraggableBoxPropsType>(
     return (
       <>
         {inCanvas ? (
-            <Rnd
+          <Rnd
             key={key}
-              className={`flex flex-col p-0 absolute`}
-              maxWidth={canvasWidth}
-              onDragStop={(e, direction) => {
-                setDragging(false);
-                onDragStop(e, id, direction);
-              }}
-              onResizeStop={(e, direction, ref, d, position) => {
-                setResizing(false);
-                onResizeStop(id, e, direction, ref, d, position);
-              }}
-              position={{
-                x: box ? (box.left * canvasWidth) / 100 : 0,
-                y: box ? box.top : 0
-              }}
-              onResize={() => setResizing(true)}
-              onDrag={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (!isDragging2) {
-                  setDragging(true);
-                }
-              }}
-              size={{
-                width: box?.width,
-                height: box?.height,
-              }}
-              bounds="parent"
-            >
-              <div className="w-full" ref={preview}>
-                <BoxOptions name={box.name} deleteComponent={deleteComponent} id={box.id}/>
-                <BoxComponent box={box}/>
-              </div>
-            </Rnd>
-        ) : <div className='h-[4.5rem] w-[4.5rem] flex flex-col items-center' ref={drag} role="DraggableBox">
-            <div className='w-full h-full flex items-center justify-center bg-secondary rounded-lg text-xl'>
-              {<IconToRender className="text-primary text-2xl"></IconToRender>}
-              </div>
-            <p className='text-[.6rem] mt-1 text-primary'>{component.displayName}</p>
-          </div>}
+            className={`absolute flex flex-col p-0`}
+            maxWidth={canvasWidth}
+            onDragStop={(e, direction) => {
+              setDragging(false);
+              onDragStop(e, id, direction);
+            }}
+            onResizeStop={(e, direction, ref, d, position) => {
+              setResizing(false);
+              onResizeStop(id, e, direction, ref, d, position);
+            }}
+            position={{
+              x: box ? (box.left * canvasWidth) / 100 : 0,
+              y: box ? box.top : 0
+            }}
+            onResize={() => setResizing(true)}
+            onDrag={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (!isDragging2) {
+                setDragging(true);
+              }
+            }}
+            size={{
+              width: box?.width,
+              height: box?.height
+            }}
+            bounds="parent"
+          >
+            <div className="w-full" ref={preview}>
+              <BoxOptions name={box.name} deleteComponent={deleteComponent} id={box.id} />
+              <BoxComponent box={box} />
+            </div>
+          </Rnd>
+        ) : (
+          <div
+            className="flex h-[4.5rem] w-[4.5rem] cursor-grab flex-col items-center"
+            ref={drag}
+            role="DraggableBox"
+          >
+            <div className="flex h-full w-full items-center justify-center rounded-lg bg-slate-100 text-xl">
+              {<IconToRender className="text-2xl text-[#0958d9]/75"></IconToRender>}
+            </div>
+            <p className="mt-1 text-[.6rem] text-primary">{component.displayName}</p>
+          </div>
+        )}
       </>
     );
   }

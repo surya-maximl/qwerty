@@ -1,5 +1,4 @@
-import { itemType } from "../interfaces/dashboard.interface";
-import { Typography } from "antd";
+import { Typography } from 'antd';
 import { BiSolidSave } from 'react-icons/bi';
 import { BsStack } from 'react-icons/bs';
 import { FaShareAlt } from 'react-icons/fa';
@@ -8,26 +7,27 @@ import { MdEmail, MdOutlineDriveFolderUpload } from 'react-icons/md';
 import { PiCirclesFourFill, PiRobotFill } from 'react-icons/pi';
 import { RiAppsFill } from 'react-icons/ri';
 
+import { itemType } from '../interfaces/dashboard.interface';
 
-export const appEvents: itemType[] = [
+export const appCardDropdownComponents: itemType[] = [
   {
     key: '1',
-    label: (<Typography>Rename app</Typography>),
+    label: <Typography>Rename app</Typography>
   },
   {
     key: '2',
-    label: (<Typography>Change icon</Typography>),
+    label: <Typography>Change icon</Typography>
   },
   {
     key: '3',
-    label: (<Typography className='text-[#ff0000]'>Delete app</Typography>),
-  },
+    label: <Typography className="text-[#ff0000]">Delete app</Typography>
+  }
 ];
 
 export const appIcons = [
   {
     name: 'email',
-    icon: <MdEmail/>
+    icon: <MdEmail />
   },
   {
     name: 'circles',
@@ -62,4 +62,3 @@ export const appIcons = [
     icon: <PiRobotFill />
   }
 ];
-

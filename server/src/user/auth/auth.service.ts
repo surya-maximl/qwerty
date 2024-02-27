@@ -10,7 +10,7 @@ import * as jwt from 'jsonwebtoken';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ObjectUnsubscribedError } from 'rxjs';
+import { ObjectUnsubscribedError, find } from 'rxjs';
 import { EmailService } from './email.service';
 const scrypt = promisify(_scrypt);
 
@@ -104,10 +104,12 @@ export class AuthService {
       id: user.id,
       token,
       email,
+      company: user.company,
+      phoneNumber: user.phoneNumber,
     };
   }
 
-  async setUpAccount({ company, phone, userId, token }: any) {
+  async setUpAccount({ company, phoneNumber, userId, token }: any) {
     // const userToken = await jwt.decode(token) as jwtPayload;
     // console.log(typeof userToken)
     // console.log(userToken, company, phone);
@@ -118,7 +120,7 @@ export class AuthService {
       throw new BadRequestException('User Already Registered. Please Login');
     findUser.validated = true;
     findUser.company = company;
-    findUser.phoneNumber = phone;
+    findUser.phoneNumber = phoneNumber;
 
     const update = await this.user.save(findUser);
     console.log(update);
@@ -126,6 +128,8 @@ export class AuthService {
       username: findUser.name,
       id: findUser.id,
       token,
+      company: findUser.company,
+      phoneNumber: findUser.phoneNumber,
       email: findUser.email,
     };
   }
@@ -155,6 +159,8 @@ export class AuthService {
       email: findUser.email,
       username: findUser.name,
       id: findUser.id,
+      company: findUser.company,
+      phoneNumber: findUser.phoneNumber,
     };
   }
 }

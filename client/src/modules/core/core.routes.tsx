@@ -3,14 +3,14 @@ import { RouteObject } from 'react-router-dom';
 import SuspenseLoader from '../authentication/components/SuspenseLoader/SuspenseLoader.component';
 import { ProtectedRoutes } from '../shared/components/protected-routes.component';
 import { RootError } from '../shared/components/route-error';
-import Dashboard from './pages/Dashboard/dashboard';
-import Editor from './pages/Editor/editor';
-import Home from './pages/Home/Home';
+import DashboardPage from './pages/DashboardPage/DashboardPage';
+import EditorPage from './pages/EditorPage/EditorPage';
+import LandingPage from './pages/LandingPage/LandingPage';
 
 export const CoreRoutes: RouteObject[] = [
   {
     path: '/',
-    element: <Home />,
+    element: <LandingPage />,
     errorElement: <RootError />
   },
   {
@@ -19,18 +19,10 @@ export const CoreRoutes: RouteObject[] = [
     errorElement: <RootError />,
     children: [
       {
-        path: '',
+        index: true,
         element: (
           <SuspenseLoader>
-            <Dashboard />
-          </SuspenseLoader>
-        )
-      },
-      {
-        path: ':id',
-        element: (
-          <SuspenseLoader>
-            <Dashboard />
+            <DashboardPage />
           </SuspenseLoader>
         )
       },
@@ -38,7 +30,7 @@ export const CoreRoutes: RouteObject[] = [
         path: 'editor/:id',
         element: (
           <SuspenseLoader>
-            <Editor />
+            <EditorPage />
           </SuspenseLoader>
         )
       }

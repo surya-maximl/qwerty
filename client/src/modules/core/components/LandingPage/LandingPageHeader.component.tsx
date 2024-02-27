@@ -1,9 +1,11 @@
-import { Button, Flex, Layout } from 'antd';
-import { useNavigate } from 'react-router-dom';
+import { Button, Flex, Layout, Typography } from 'antd';
+import { Link, useNavigate } from 'react-router-dom';
 
+import logo from '../../../../assets/logo.png';
 import { useAuth } from '../../../shared/hooks/useAuth';
 
 const { Header } = Layout;
+const { Paragraph } = Typography;
 
 const LandingPageHeader: React.FC = () => {
   const navigate = useNavigate();
@@ -22,11 +24,16 @@ const LandingPageHeader: React.FC = () => {
   }
 
   return (
-    <Header className="bg-background/95 supports-[backdrop-filter]:bg-background/60 flex w-full items-center justify-center border-0 border-b-[1px] border-solid border-border backdrop-blur">
+    <Header className="flex w-full items-center justify-center border-0 border-b-[1px] border-solid border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <Flex className="container w-full" justify="space-between" align="center">
-        <Flex justify="center" align="center">
-          <img src="/favicon.ico" className="h-9 w-9 rounded-lg" alt="logo" />
-        </Flex>
+        <Link to="/">
+          <Flex justify="center" align="center" className="group gap-2">
+            <img src={logo} className="h-8 w-8 rounded-lg" alt="logo" />
+            <Paragraph className="!m-0 hidden text-lg font-extrabold tracking-tight text-mutedForeground transition duration-300 ease-in-out group-hover:text-foreground sm:block">
+              AutoApp
+            </Paragraph>
+          </Flex>
+        </Link>
         <Flex className="items-center gap-4">
           {loggedIn ? (
             <>
