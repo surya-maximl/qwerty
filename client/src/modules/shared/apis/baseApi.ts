@@ -17,6 +17,8 @@ const baseQuery = fetchBaseQuery({
     if (token) {
       headers.set('Authorization', `Bearer ${token}`);
     }
+    headers.set('ngrok-skip-browser-warning', '69420');
+    headers.set('ngrok-skip-browser-warning', '6024');
     return headers;
   }
 }) as BaseQueryFn<string | FetchArgs, unknown, CustomError, {}>;

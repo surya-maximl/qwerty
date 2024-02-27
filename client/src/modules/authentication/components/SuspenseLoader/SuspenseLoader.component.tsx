@@ -18,7 +18,7 @@ function SuspenseLoader({ children, isAuthRoute }: SuspenseLoaderProps): JSX.Ele
             <Skeleton.Button active className="!w-full !max-w-sm" />
           </Flex>
         ) : (
-          <Flex className="h-screen w-screen items-center justify-center bg-secondary">
+          <Flex className="h-screen w-screen items-center justify-center bg-background/10">
             <Spin size="large" />
           </Flex>
         )
