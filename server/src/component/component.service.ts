@@ -12,7 +12,6 @@ export class ComponentService {
 
   async getAllComponents(appId: string, userId: string,) {
     const components = await this.components.find({ where: { userId, appId } });
-    if (!components.length) throw new NotFoundException("Components not found");
     return components;
   }
 
@@ -38,7 +37,7 @@ export class ComponentService {
     const findComponent = await this.components.exists({ where: { id, userId, appId } })
     if (!findComponent) throw new NotFoundException("No Component Found");
     const component = await this.components.findOne({ where: { id, userId, appId } });
-    // console.log(attr);
+    console.log("attr: ", attr);
     Object.assign(component, attr);
     // console.log(component);
     return await this.components.save(component);
