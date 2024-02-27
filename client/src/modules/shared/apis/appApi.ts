@@ -1,16 +1,5 @@
+import { AppType } from '../../core/interfaces/dashboard.interface';
 import baseApi from './baseApi';
-
-type AppType = {
-  id: string;
-  name: string;
-  icon: any;
-  isPublic: boolean;
-  isMaintenanceOn: boolean;
-  currentVersionId: string;
-  userId: string;
-  createdAt: string;
-  updatedAt: string;
-};
 
 type RenameAppProps = {
   appName: string;
@@ -28,10 +17,7 @@ export const appApi = baseApi.injectEndpoints({
       query: () => {
         return {
           url: 'apps',
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json'
-          }
+          method: 'GET'
         };
       },
       transformResponse: (response) => {
@@ -39,6 +25,15 @@ export const appApi = baseApi.injectEndpoints({
           (a, b) => a.id.charCodeAt(0) - b.id.charCodeAt(0)
         );
         return transformedResponse;
+      },
+      providesTags: ['Apps']
+    }),
+    getApp: build.query<AppType, string>({
+      query: (id) => {
+        return {
+          url: `apps/${id}`,
+          method: 'GET'
+        };
       },
       providesTags: ['Apps']
     }),
@@ -92,6 +87,7 @@ export const appApi = baseApi.injectEndpoints({
 });
 
 export const {
+  useGetAppQuery,
   useGetAllAppsQuery,
   useCreateAppMutation,
   useRenameAppMutation,

@@ -1,5 +1,5 @@
 import { ChangeEvent, useEffect, useState } from 'react';
-import { SearchOutlined } from '@ant-design/icons';
+import { CloseOutlined, SearchOutlined } from '@ant-design/icons';
 import { Flex, Input } from 'antd';
 
 import useDebounce from '../../../../shared/hooks/useDebounce';
@@ -9,16 +9,12 @@ import { Props } from './SearchBoxProps.type';
 export const SearchBox: React.FC<Props> = ({
   onSubmit,
   debounceDelay = 300,
-  placeholder = 'Search',
-  customClass = '',
   callBack,
-  onClearCallback,
-  autoFocus = false,
-  initialValue = ''
+  onClearCallback
 }) => {
   const [searchText, setSearchText] = useState('');
   const debouncedSearchTerm = useDebounce(searchText, debounceDelay);
-  const [isFocused, setFocussed] = useState(false);
+  const [isFocused, setFocussed] = useState<boolean>(false);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchText(e.target.value);
@@ -39,38 +35,25 @@ export const SearchBox: React.FC<Props> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearchTerm, onSubmit]);
 
-  useEffect(() => {
-    initialValue !== undefined && setSearchText(initialValue);
-  }, [initialValue]);
-
   return (
-    <div className={`search-box-wrapper ${customClass}`}>
-      <Flex className="input-icon items-center" gap="small">
-        {!isFocused && (
-          <span className="input-icon-addon">
-            <SearchOutlined />
-          </span>
-        )}
-        <Input
-          className=""
-          type="text"
-          value={searchText}
-          onChange={handleChange}
-          placeholder={placeholder}
-          onFocus={() => setFocussed(true)}
-          onBlur={() => setFocussed(false)}
-          autoFocus={autoFocus}
-        />
-        {searchText.length > 0 ? (
-          <span className="input-icon-addon end" onMouseDown={clearSearchText}>
-            <div>
-              <SearchOutlined />
-            </div>
-          </span>
-        ) : (
-          ''
-        )}
-      </Flex>
-    </div>
+    <Flex className="items-center" gap="small">
+      {!isFocused && <SearchOutlined className="text-foreground" />}
+      <Input
+        type="text"
+        value={searchText}
+        onChange={handleChange}
+        placeholder="Search widgets"
+        onFocus={() => setFocussed(true)}
+        onBlur={() => setFocussed(false)}
+      />
+      {searchText.length > 0 && (
+        <Flex
+          className="cursor-pointer items-center justify-center rounded-lg p-2 text-foreground transition duration-200 ease-in-out hover:bg-blue-50"
+          onClick={clearSearchText}
+        >
+          <CloseOutlined />
+        </Flex>
+      )}
+    </Flex>
   );
 };

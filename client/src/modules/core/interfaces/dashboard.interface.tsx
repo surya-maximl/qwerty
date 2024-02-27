@@ -1,11 +1,16 @@
-export type appType = {
-  appId: string;
-  versions: { [id: string]: { version: string; boxes: any } };
-  title: string;
+export type AppType = {
+  id: string;
+  name: string;
+  icon: any;
+  isPublic: boolean;
+  isMaintenanceOn: boolean;
+  currentVersionId: string;
   userId: string;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type itemType = {
-  key: string,
-  label: JSX.Element
-}
+  key: string;
+  label: JSX.Element;
+};

@@ -3,19 +3,13 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import { AuthRoutes } from './modules/authentication/auth.routes';
 import { CoreRoutes } from './modules/core/core.routes';
-import appUrlConfigurator from './modules/core/utils/appUrlResolverHelper';
-
-appUrlConfigurator.setBaseHrefAndTenantCode();
-console.log('After Base Href Set ', appUrlConfigurator.getBaseHref());
 
 /**
  * Application routes
  * https://reactrouter.com/en/main/routers/create-browser-router
  */
 
-const router = createBrowserRouter([...CoreRoutes, ...AuthRoutes], {
-  basename: appUrlConfigurator.getBaseHref()
-});
+const router = createBrowserRouter([...CoreRoutes, ...AuthRoutes]);
 
 export function Router(): JSX.Element {
   return createElement(RouterProvider, { router });

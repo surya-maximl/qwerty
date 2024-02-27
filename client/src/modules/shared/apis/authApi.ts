@@ -1,23 +1,32 @@
 import { User } from '../../authentication/interfaces';
 import baseApi from './baseApi';
 
-type loginForm = {
+export type loginForm = {
   email: string;
   password: string;
 };
 
-type signupForm = {
+export type signupForm = {
   email: string;
   password: string;
   name: string;
   phone: string;
 };
 
-type invitationForm = {
-  companyName: string;
+export type invitationForm = {
+  company: string;
   phoneNumber: string;
   userId: string;
   token: string;
+};
+
+export type LoginInfo = {
+  msg: string;
+  emailSent: boolean;
+};
+
+export type SignupInfo = {
+  msg: Object;
 };
 
 export const authApi = baseApi.injectEndpoints({
@@ -33,7 +42,7 @@ export const authApi = baseApi.injectEndpoints({
         };
       }
     }),
-    login: build.mutation<User, loginForm>({
+    login: build.mutation<User | LoginInfo, loginForm>({
       query: (credentials) => {
         return {
           url: 'auth/signin',
@@ -43,7 +52,7 @@ export const authApi = baseApi.injectEndpoints({
       },
       invalidatesTags: ['User']
     }),
-    signup: build.mutation<User, signupForm>({
+    signup: build.mutation<User | SignupInfo, signupForm>({
       query: (credentials) => {
         return {
           url: 'auth/signup',
@@ -54,18 +63,18 @@ export const authApi = baseApi.injectEndpoints({
       invalidatesTags: ['User']
     }),
     handleInvitation: build.mutation<User, invitationForm>({
-      query: ({ companyName, phoneNumber, userId, token }) => {
+      query: ({ company, phoneNumber, userId }) => {
         return {
           url: 'auth/setup-account-from-token',
           method: 'POST',
           body: {
-            companyName,
+            company,
             phoneNumber,
             userId
           }
         };
       },
-      transformResponse: (response, meta, arg) => {
+      transformResponse: (response: User, meta, arg) => {
         return {
           ...response,
           token: arg.token

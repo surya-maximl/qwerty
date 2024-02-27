@@ -5,9 +5,9 @@ import { ProtectedRoutes } from '../shared/components/protected-routes.component
 import { RootError } from '../shared/components/route-error';
 import SuspenseLoader from './components/SuspenseLoader/SuspenseLoader.component';
 
-const Login = lazy(() => import('./pages/Login/Login'));
-const Signup = lazy(() => import('./pages/Signup/Signup'));
-const Invitations = lazy(() => import('./pages/Invitations/Invitations'));
+const LoginPage = lazy(() => import('./pages/LoginPage/LoginPage'));
+const SignupPage = lazy(() => import('./pages/SignupPage/SignupPage'));
+const InvitationsPage = lazy(() => import('./pages/InvitationsPage/InvitationsPage'));
 
 export const AuthRoutes: RouteObject[] = [
   {
@@ -22,24 +22,24 @@ export const AuthRoutes: RouteObject[] = [
       {
         path: 'login',
         element: (
-          <SuspenseLoader>
-            <Login />
+          <SuspenseLoader isAuthRoute={true}>
+            <LoginPage />
           </SuspenseLoader>
         )
       },
       {
         path: 'signup',
         element: (
-          <SuspenseLoader>
-            <Signup />
+          <SuspenseLoader isAuthRoute={true}>
+            <SignupPage />
           </SuspenseLoader>
         )
       },
       {
         path: 'invitations/:invitationId',
         element: (
-          <SuspenseLoader>
-            <Invitations />
+          <SuspenseLoader isAuthRoute={true}>
+            <InvitationsPage />
           </SuspenseLoader>
         )
       }
