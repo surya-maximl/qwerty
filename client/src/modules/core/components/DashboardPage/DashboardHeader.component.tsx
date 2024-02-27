@@ -29,7 +29,7 @@ const DashboardHeader: React.FC = () => {
     },
     {
       key: 'profile-settings',
-      label: <span className="font-medium text-foreground">Profile Settings</span>
+      label: <span className="font-medium text-foreground">View User Profile</span>
     },
     {
       type: 'divider'

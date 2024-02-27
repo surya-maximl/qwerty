@@ -81,6 +81,9 @@ const AppControlModal: React.FC<AppControlModalProps> = ({
     setUpdatingAppId(appId);
     if (appName === '') {
       message.error('Please enter a valid name');
+      setUpdatingAppId('');
+      setSelectedAppId('');
+      setAppName('');
       return;
     }
 
