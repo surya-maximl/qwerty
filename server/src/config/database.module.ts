@@ -14,7 +14,11 @@ require('dotenv').config()
                 type: 'postgres',
                 url: process.env.NODE_ENV = 'dev' ? process.env.DEV_DATABASE_URL : process.env.PROD_DATABASE_URL,
                 synchronize: true,
-                entities: [User, AppEntity, ComponentEntity]
+                entities: [User, AppEntity, ComponentEntity],
+                migrations: [__dirname + '/migrations/*{.ts,.js}'],
+                cli: {
+                    migrationsDir: __dirname + '/migrations/',
+                },
             }),
             inject: [ConfigService]
         })
