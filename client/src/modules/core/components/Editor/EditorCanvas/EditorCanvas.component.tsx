@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { LoadingOutlined } from '@ant-design/icons';
-import { Flex, Layout, Spin, Typography } from 'antd';
+import { App, Flex, Layout, Spin, Typography } from 'antd';
 import update from 'immutability-helper';
 import { cloneDeep } from 'lodash';
 import { DropTargetMonitor, useDrop } from 'react-dnd';
@@ -27,6 +27,7 @@ const EditorCanvas: React.FC<{ canvasWidth: number }> = ({ canvasWidth }) => {
   const canvasRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
+  const { message } = App.useApp();
   const gridWidth = Number(canvasWidth) / NO_OF_GRIDS;
   const { id } = useParams();
   const [updateComponents, { isLoading: isUpdateComponentLoading }] = useUpdateComponentsMutation();
@@ -270,15 +271,24 @@ const EditorCanvas: React.FC<{ canvasWidth: number }> = ({ canvasWidth }) => {
     });
   }
 
+  if (isOverlayVisible) {
+    message.destroy('loading');
+
+    message.loading({
+      key: 'loading',
+      content: 'Updating Canvas'
+    });
+  }
+
   return (
     <Content>
       <Flex className="h-full w-full" id="real-canvas">
         <div className="relative h-full w-full">
-          {isOverlayVisible && (
+          {/* {isOverlayVisible && (
             <div className="absolute left-0 top-0 z-20 flex h-full w-full items-center justify-center !bg-secondary p-10">
               <Spin indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />} />
             </div>
-          )}
+          )} */}
           <div
             id="real-canvas"
             className="real-canvas relative flex h-full w-full items-center bg-slate-400/65"

@@ -18,7 +18,7 @@ export function ProtectedRoutes({ isAuthRoute = false }: ProtectedRoutesProps): 
 
   if (isLoading || isFetching) {
     return (
-      <Flex className="h-screen w-screen items-center justify-center bg-secondary">
+      <Flex className="h-screen w-screen items-center justify-center bg-background/10">
         <Spin size="large" />
       </Flex>
     );
